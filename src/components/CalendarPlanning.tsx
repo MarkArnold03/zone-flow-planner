@@ -1,25 +1,49 @@
 import React, { useState } from 'react';
-import { startOfWeek, addDays } from 'date-fns';
-import { CalendarSidebar } from './CalendarSidebar';
-import { FlowCanvas } from './FlowCanvas';
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, format } from 'date-fns';
+import { MobilitySidebar } from './MobilitySidebar';
+import { CalendarView } from './CalendarView';
+import { BookingDialog } from './BookingDialog';
 
 export function CalendarPlanning() {
-  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
   
-  const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(currentDate);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  
+  const calendarDays = [];
+  let day = calendarStart;
+  while (day <= calendarEnd) {
+    calendarDays.push(day);
+    day = addDays(day, 1);
+  }
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    setIsBookingOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
-      <CalendarSidebar 
-        currentWeek={currentWeek}
-        weekDays={weekDays}
-        onWeekChange={setCurrentWeek}
-      />
+      <MobilitySidebar />
       
       <div className="flex-1">
-        <FlowCanvas weekDays={weekDays} />
+        <CalendarView 
+          currentDate={currentDate}
+          calendarDays={calendarDays}
+          onDateChange={setCurrentDate}
+          onDateClick={handleDateClick}
+        />
       </div>
+
+      <BookingDialog 
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        selectedDate={selectedDate}
+      />
     </div>
   );
 }
