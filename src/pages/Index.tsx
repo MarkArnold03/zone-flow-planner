@@ -1,7 +1,7 @@
-import { DeliveryPlanning } from '@/components/DeliveryPlanning';
+import { CalendarPlanning } from '@/components/CalendarPlanning';
 
 const Index = () => {
-  return <DeliveryPlanning />;
+  return <CalendarPlanning />;
 };
 
 export default Index;
