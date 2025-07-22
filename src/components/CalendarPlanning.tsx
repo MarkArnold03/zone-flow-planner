@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, format } from 'date-fns';
+import { startOfWeek, addDays } from 'date-fns';
 import { MobilitySidebar } from './MobilitySidebar';
-import { CalendarView } from './CalendarView';
+import { WeekCalendarView } from './WeekCalendarView';
 import { BookingDialog } from './BookingDialog';
 
 export function CalendarPlanning() {
@@ -9,17 +9,8 @@ export function CalendarPlanning() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
-  
-  const calendarDays = [];
-  let day = calendarStart;
-  while (day <= calendarEnd) {
-    calendarDays.push(day);
-    day = addDays(day, 1);
-  }
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
@@ -31,9 +22,8 @@ export function CalendarPlanning() {
       <MobilitySidebar />
       
       <div className="flex-1">
-        <CalendarView 
+        <WeekCalendarView 
           currentDate={currentDate}
-          calendarDays={calendarDays}
           onDateChange={setCurrentDate}
           onDateClick={handleDateClick}
         />

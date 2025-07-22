@@ -13,14 +13,28 @@ const mobilityZones = [
     ]
   },
   {
-    id: 'regional',
-    title: 'Regionala zoner', 
-    subtitle: 'Större städer och regioner',
+    id: 'north',
+    title: 'Norra Sverige',
+    subtitle: 'Norrlands regioner',
     zones: [
       { id: 'stockholm', name: 'Stockholm', description: 'Storstockholm och närområde', icon: MapPin, color: '#3b82f6' },
-      { id: 'goteborg', name: 'Göteborg', description: 'Västra Götaland', icon: MapPin, color: '#10b981' },
-      { id: 'malmo', name: 'Malmö', description: 'Skåne och sydvästra Sverige', icon: MapPin, color: '#8b5cf6' },
       { id: 'uppsala', name: 'Uppsala', description: 'Uppsala län', icon: MapPin, color: '#f59e0b' }
+    ]
+  },
+  {
+    id: 'west',
+    title: 'Västra Sverige',
+    subtitle: 'Västkusten och Västra Götaland',
+    zones: [
+      { id: 'goteborg', name: 'Göteborg', description: 'Västra Götaland', icon: MapPin, color: '#10b981' }
+    ]
+  },
+  {
+    id: 'south',
+    title: 'Södra Sverige',
+    subtitle: 'Skåne och sydvästra regioner',
+    zones: [
+      { id: 'malmo', name: 'Malmö', description: 'Skåne och sydvästra Sverige', icon: MapPin, color: '#8b5cf6' }
     ]
   },
   {
@@ -62,6 +76,10 @@ export function MobilitySidebar() {
                   key={zone.id} 
                   className="cursor-pointer hover:shadow-md transition-shadow border-l-4"
                   style={{ borderLeftColor: zone.color }}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('zone', JSON.stringify(zone));
+                  }}
                 >
                   <CardContent className="p-3">
                     <div className="flex items-start space-x-3">
@@ -88,17 +106,6 @@ export function MobilitySidebar() {
         ))}
       </div>
 
-      {/* Footer Actions */}
-      <div className="p-4 border-t mt-auto">
-        <div className="space-y-2">
-          <button className="w-full text-left text-sm text-primary hover:underline">
-            Resurser
-          </button>
-          <button className="w-full text-left text-sm text-primary hover:underline">
-            Anställda
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
