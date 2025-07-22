@@ -136,86 +136,93 @@ export function CalendarPlanning() {
   }, [currentWeek, setNodes]);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Zone Planning Calendar
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                Drag zones from sidebar to schedule deliveries
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentWeek(addDays(currentWeek, -7))}
-              >
-                ← Previous
-              </Button>
-              <span className="text-sm font-medium min-w-[200px] text-center">
-                {format(weekStart, 'MMM dd')} - {format(addDays(weekStart, 6), 'MMM dd, yyyy')}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentWeek(addDays(currentWeek, 7))}
-              >
-                Next →
-              </Button>
-            </div>
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar with everything */}
+      <div className="w-80 border-r bg-card shadow-lg">
+        {/* Sidebar Header */}
+        <div className="p-4 border-b">
+          <h2 className="text-lg font-bold text-foreground">
+            Leveransplanering
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Dra zoner till tidsplatser
+          </p>
+        </div>
+
+        {/* Week Navigation */}
+        <div className="p-4 border-b">
+          <div className="flex items-center justify-between mb-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentWeek(addDays(currentWeek, -7))}
+            >
+              ←
+            </Button>
+            <span className="text-sm font-medium">
+              {format(weekStart, 'MMM dd')} - {format(addDays(weekStart, 6), 'MMM dd')}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentWeek(addDays(currentWeek, 7))}
+            >
+              →
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Calendar Grid Headers */}
-      <div className="bg-muted/30 border-b">
-        <div className="flex">
-          {/* Sidebar space */}
-          <div className="w-[250px] p-4">
-            <h3 className="font-semibold text-sm text-muted-foreground">DELIVERY ZONES</h3>
-          </div>
-          
-          {/* Date headers */}
-          <div className="flex-1">
-            <div className="grid grid-cols-7 gap-1 p-4">
-              {weekDays.map((day) => (
-                <div key={day.toISOString()} className="text-center">
-                  <div className="font-semibold text-sm">
-                    {format(day, 'EEE')}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {format(day, 'MMM dd')}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Time Slot Row Headers */}
-      <div className="border-b bg-muted/10">
-        <div className="flex">
-          <div className="w-[250px]"></div>
-          <div className="flex-1 p-2">
-            {timeSlots.map((slot) => (
-              <div key={slot.id} className="h-[120px] flex items-center">
-                <div className="text-sm font-medium text-muted-foreground -rotate-90 whitespace-nowrap origin-center">
-                  {slot.label}
+        {/* Zones */}
+        <div className="p-4 border-b">
+          <h3 className="text-sm font-semibold mb-3 text-muted-foreground">ZONER</h3>
+          <div className="space-y-2">
+            {zones.map((zone) => (
+              <div
+                key={zone.id}
+                className="p-3 border-2 rounded-lg cursor-move shadow-sm"
+                style={{ borderColor: zone.color }}
+              >
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: zone.color }}
+                  ></div>
+                  <span className="font-medium text-sm">{zone.name}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Time Slots & Dates */}
+        <div className="flex-1 overflow-y-auto">
+          {timeSlots.map((slot) => (
+            <div key={slot.id} className="border-b">
+              <div className="p-3 bg-muted/30">
+                <h4 className="text-sm font-semibold text-center">{slot.label}</h4>
+              </div>
+              <div className="grid grid-cols-7 gap-1 p-2">
+                {weekDays.map((day) => (
+                  <div
+                    key={`${slot.id}-${format(day, 'yyyy-MM-dd')}`}
+                    className="aspect-square border-2 border-dashed border-muted-foreground/30 rounded p-1 text-center hover:border-muted-foreground/50 cursor-pointer"
+                  >
+                    <div className="text-xs font-medium">
+                      {format(day, 'EEE')}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {format(day, 'dd')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* ReactFlow Calendar */}
-      <div className="flex-1" style={{ height: 'calc(100vh - 240px)' }}>
+      {/* Main Area */}
+      <div className="flex-1">
         <ReactFlowProvider>
           <ReactFlow
             nodes={nodes}
@@ -228,8 +235,6 @@ export function CalendarPlanning() {
             defaultViewport={{ x: 0, y: 0, zoom: 1 }}
             style={{ backgroundColor: 'hsl(var(--background))' }}
             proOptions={{ hideAttribution: true }}
-            nodesDraggable={true}
-            nodesConnectable={true}
           >
             <Background color="hsl(var(--border))" size={1} />
             <Controls position="bottom-right" />
