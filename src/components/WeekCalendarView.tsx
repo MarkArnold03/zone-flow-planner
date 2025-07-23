@@ -43,18 +43,66 @@ export function WeekCalendarView({ currentDate, onDateChange, onDateClick }: Wee
 
   const handleDrop = (e: React.DragEvent, date: Date, timeSlot: string) => {
     e.preventDefault();
-    const zoneData = JSON.parse(e.dataTransfer.getData('zone'));
     const key = `${format(date, 'yyyy-MM-dd')}-${timeSlot}`;
     
-    setAssignments(prev => ({
-      ...prev,
-      [key]: zoneData
-    }));
+    // Handle zone drop
+    const zoneData = e.dataTransfer.getData('zone');
+    if (zoneData) {
+      const zone = JSON.parse(zoneData);
+      setAssignments(prev => ({
+        ...prev,
+        [key]: zone
+      }));
 
-    toast({
-      title: "Zon tilldelad",
-      description: `${zoneData.name} tilldelad till ${format(date, 'EEE dd')} ${timeSlot}`,
-    });
+      toast({
+        title: "Zon tilldelad",
+        description: `${zone.name} tilldelad till ${format(date, 'EEE dd')} ${timeSlot}`,
+      });
+      return;
+    }
+
+    // Handle truck drop
+    const truckData = e.dataTransfer.getData('truck');
+    if (truckData) {
+      const truck = JSON.parse(truckData);
+      const zoneForSlot = truck.zones[timeSlot];
+      
+      setAssignments(prev => ({
+        ...prev,
+        [key]: {
+          ...zoneForSlot,
+          truck: truck.name,
+          driver: truck.driver
+        }
+      }));
+
+      toast({
+        title: "Fordon tilldelat",
+        description: `${truck.name} (${truck.driver}) tilldelat till ${format(date, 'EEE dd')} ${timeSlot}`,
+      });
+      return;
+    }
+
+    // Handle zone group drop
+    const zoneGroupData = e.dataTransfer.getData('zoneGroup');
+    if (zoneGroupData) {
+      const group = JSON.parse(zoneGroupData);
+      
+      setAssignments(prev => ({
+        ...prev,
+        [key]: {
+          name: group.name,
+          color: group.color,
+          isGroup: true,
+          zones: group.zones
+        }
+      }));
+
+      toast({
+        title: "Zongrupp tilldelad",
+        description: `${group.name} tilldelad till ${format(date, 'EEE dd')} ${timeSlot}`,
+      });
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -121,16 +169,31 @@ export function WeekCalendarView({ currentDate, onDateChange, onDateClick }: Wee
                   onClick={() => onDateClick(day)}
                 >
                   {getAssignment(day, slot.id) && (
-                    <Badge 
-                      variant="secondary" 
-                      className="w-full justify-start text-xs"
-                      style={{ 
-                        backgroundColor: getAssignment(day, slot.id).color + '20',
-                        borderColor: getAssignment(day, slot.id).color 
-                      }}
-                    >
-                      {getAssignment(day, slot.id).name}
-                    </Badge>
+                    <div className="space-y-1">
+                      <Badge 
+                        variant="secondary" 
+                        className="w-full justify-start text-xs"
+                        style={{ 
+                          backgroundColor: getAssignment(day, slot.id).color + '20',
+                          borderColor: getAssignment(day, slot.id).color 
+                        }}
+                      >
+                        {getAssignment(day, slot.id).name}
+                        {getAssignment(day, slot.id).isGroup && ' (Grupp)'}
+                      </Badge>
+                      {getAssignment(day, slot.id).truck && (
+                        <div className="text-xs text-muted-foreground">
+                          🚛 {getAssignment(day, slot.id).truck}
+                          <br />
+                          👤 {getAssignment(day, slot.id).driver}
+                        </div>
+                      )}
+                      {getAssignment(day, slot.id).zones && (
+                        <div className="text-xs text-muted-foreground">
+                          Zoner: {getAssignment(day, slot.id).zones.join(', ')}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               ))}
