@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import { MapPin, Users, Package, Settings, Search } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { ZonesTab } from './ZonesTab';
+import { ZoneGroupsTab } from './ZoneGroupsTab';
+import { TrucksTab } from './TrucksTab';
+import { ToolsTab } from './ToolsTab';
+import { NotesAnnotations } from './NotesAnnotations';
+
+export function PlanningSidebar() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  return (
+    <div className="w-80 border-r bg-card shadow-lg flex flex-col">
+      {/* Sidebar Header */}
+      <div className="p-4 border-b space-y-3">
+        <div>
+          <h2 className="text-lg font-bold text-foreground">
+            Delivery Control Panel
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Drag & drop to assign zones, trucks, and routes
+          </p>
+        </div>
+        
+        {/* Global Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search postcodes, zones, trucks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="zones" className="flex-1 flex flex-col">
+        <TabsList className="grid w-full grid-cols-4 mx-4 mt-4">
+          <TabsTrigger value="zones" className="text-xs">
+            <MapPin className="h-3 w-3 mr-1" />
+            Zones
+          </TabsTrigger>
+          <TabsTrigger value="groups" className="text-xs">
+            <Package className="h-3 w-3 mr-1" />
+            Groups
+          </TabsTrigger>
+          <TabsTrigger value="trucks" className="text-xs">
+            <Users className="h-3 w-3 mr-1" />
+            Trucks
+          </TabsTrigger>
+          <TabsTrigger value="tools" className="text-xs">
+            <Settings className="h-3 w-3 mr-1" />
+            Tools
+          </TabsTrigger>
+        </TabsList>
+
+        <div className="flex-1 overflow-hidden">
+          <TabsContent value="zones" className="h-full p-0 m-0">
+            <ZonesTab searchQuery={searchQuery} />
+          </TabsContent>
+          
+          <TabsContent value="groups" className="h-full p-0 m-0">
+            <ZoneGroupsTab searchQuery={searchQuery} />
+          </TabsContent>
+          
+          <TabsContent value="trucks" className="h-full p-0 m-0">
+            <TrucksTab searchQuery={searchQuery} />
+          </TabsContent>
+          
+          <TabsContent value="tools" className="h-full p-0 m-0">
+            <ToolsTab />
+          </TabsContent>
+        </div>
+      </Tabs>
+
+      {/* Notes Section */}
+      <div className="border-t">
+        <NotesAnnotations />
+      </div>
+    </div>
+  );
+}
