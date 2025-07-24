@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { ExportTools } from './ExportTools';
+import { SettingsDialog } from './SettingsDialog';
 
 export function PlanningHeader() {
   const { state, updateDate } = useDeliveryPlanning();
@@ -65,10 +66,12 @@ export function PlanningHeader() {
             Route Map
           </Button>
           <ExportTools />
-          <Button variant="outline" size="sm">
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </Button>
+          <SettingsDialog>
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4 mr-2" />
+              Settings
+            </Button>
+          </SettingsDialog>
         </div>
       </div>
     </div>

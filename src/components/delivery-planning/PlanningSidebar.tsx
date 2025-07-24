@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { ZoneManagement } from './ZoneManagement';
 import { ZoneGroupsTab } from './ZoneGroupsTab';
-import { TrucksTab } from './TrucksTab';
+import { WorkersTab } from './WorkersTab';
 import { ToolsTab } from './ToolsTab';
 import { RouteVisualization } from './RouteVisualization';
 import { RouteOptimizer } from './RouteOptimizer';
@@ -49,9 +49,9 @@ export function PlanningSidebar() {
             <Package className="h-3 w-3 mr-1" />
             Groups
           </TabsTrigger>
-          <TabsTrigger value="trucks" className="text-xs">
+          <TabsTrigger value="workers" className="text-xs">
             <Users className="h-3 w-3 mr-1" />
-            Trucks
+            Workers
           </TabsTrigger>
           <TabsTrigger value="routes" className="text-xs">
             <Route className="h-3 w-3 mr-1" />
@@ -72,8 +72,8 @@ export function PlanningSidebar() {
             <ZoneGroupsTab searchQuery={searchQuery} />
           </TabsContent>
           
-          <TabsContent value="trucks" className="h-full p-0 m-0">
-            <TrucksTab searchQuery={searchQuery} />
+          <TabsContent value="workers" className="h-full p-0 m-0">
+            <WorkersTab searchQuery={searchQuery} />
           </TabsContent>
           
           <TabsContent value="routes" className="h-full p-0 m-0">

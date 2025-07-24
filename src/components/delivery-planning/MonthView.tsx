@@ -32,7 +32,7 @@ export function MonthView({ onDrop, onDragOver, getAssignments }: MonthViewProps
     return {
       total: assignments.length,
       conflicts: assignments.filter(a => a.conflicts && a.conflicts.length > 0).length,
-      trucks: new Set(assignments.map(a => a.truck?.id).filter(Boolean)).size
+      workers: new Set(assignments.flatMap(a => a.workers?.map(w => w.id) || [])).size
     };
   };
 
@@ -91,9 +91,9 @@ export function MonthView({ onDrop, onDragOver, getAssignments }: MonthViewProps
                 {/* Quick Stats */}
                 {counts.total > 0 && (
                   <div className="flex items-center space-x-1">
-                    {counts.trucks > 0 && (
+                    {counts.workers > 0 && (
                       <Badge variant="secondary" className="text-xs h-5">
-                        🚛 {counts.trucks}
+                        👥 {counts.workers}
                       </Badge>
                     )}
                     {counts.conflicts > 0 && (

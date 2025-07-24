@@ -56,8 +56,6 @@ export function ConflictViewer({ conflicts, title = "Conflicts Detected" }: Conf
         return 'Zone Overlap';
       case 'insufficient_time':
         return 'Insufficient Time';
-      case 'truck_unavailable':
-        return 'Truck Unavailable';
       default:
         return 'Unknown Conflict';
     }

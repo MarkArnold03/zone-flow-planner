@@ -33,13 +33,7 @@ export interface Worker {
   skills: string[];
 }
 
-export interface Truck {
-  id: string;
-  name: string;
-  capacity: number;
-  workers: Worker[];
-  status: 'available' | 'assigned' | 'maintenance';
-}
+// Truck interface removed - trucks are no longer used in the system
 
 export interface TimeSlot {
   id: string;
@@ -54,7 +48,7 @@ export interface DeliveryAssignment {
   timeSlot: string;
   zone?: Zone;
   zoneGroup?: ZoneGroup;
-  truck?: Truck;
+  workers?: Worker[]; // Direct worker assignment instead of through trucks
   deliveryCount: number;
   postcodes: string[];
   notes?: string;
@@ -63,7 +57,7 @@ export interface DeliveryAssignment {
 }
 
 export interface ConflictType {
-  type: 'capacity_exceeded' | 'double_booking' | 'worker_conflict' | 'zone_overlap' | 'insufficient_time' | 'truck_unavailable';
+  type: 'capacity_exceeded' | 'double_booking' | 'worker_conflict' | 'zone_overlap' | 'insufficient_time';
   severity: 'low' | 'medium' | 'high';
   message: string;
   reason: string;
@@ -89,7 +83,7 @@ export interface RouteStop {
 
 export interface Route {
   id: string;
-  truckId: string;
+  workerId?: string; // Optional worker assignment
   date: Date;
   timeSlot: string;
   stops: RouteStop[];
@@ -104,11 +98,10 @@ export interface PlanningState {
   assignments: DeliveryAssignment[];
   zones: Zone[];
   zoneGroups: ZoneGroup[];
-  trucks: Truck[];
+  workers: Worker[]; // Direct worker management
   notes: CalendarNote[];
   routes: Route[];
   filters: {
-    truck?: string;
     zone?: string;
     worker?: string;
     postcode?: string;
@@ -116,8 +109,8 @@ export interface PlanningState {
 }
 
 export interface DragData {
-  type: 'zone' | 'zoneGroup' | 'truck' | 'assignment';
-  data: Zone | ZoneGroup | Truck | DeliveryAssignment;
+  type: 'zone' | 'zoneGroup' | 'worker' | 'assignment';
+  data: Zone | ZoneGroup | Worker | DeliveryAssignment;
 }
 
 export interface ExportOptions {
@@ -128,5 +121,5 @@ export interface ExportOptions {
   };
   includeRoutes: boolean;
   includeNotes: boolean;
-  groupByTruck: boolean;
+  groupByWorker: boolean;
 }

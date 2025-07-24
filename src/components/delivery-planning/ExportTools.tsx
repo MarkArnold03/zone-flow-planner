@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, FileText, FileSpreadsheet, Calendar, Truck, MapPin } from 'lucide-react';
+import { Download, FileText, FileSpreadsheet, Calendar, Users, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -19,7 +19,7 @@ export function ExportTools() {
     dateRange: 'current' as 'current' | 'week' | 'month' | 'custom',
     includeRoutes: false,
     includeNotes: false,
-    groupByTruck: true,
+    groupByWorker: true,
     includeConflicts: true,
   });
 
@@ -27,7 +27,7 @@ export function ExportTools() {
     // Simulate export functionality
     const exportData = {
       assignments: filteredAssignments,
-      trucks: state.trucks,
+      workers: state.workers,
       zones: state.zones,
       options: exportOptions,
       exportDate: new Date(),
@@ -46,12 +46,12 @@ export function ExportTools() {
 
   const getExportPreview = () => {
     const assignmentCount = filteredAssignments.length;
-    const truckCount = new Set(filteredAssignments.map(a => a.truck?.id).filter(Boolean)).size;
+    const workerCount = new Set(filteredAssignments.flatMap(a => a.workers?.map(w => w.id) || [])).size;
     const zoneCount = new Set(filteredAssignments.map(a => a.zone?.id || a.zoneGroup?.id).filter(Boolean)).size;
     
     return {
       assignments: assignmentCount,
-      trucks: truckCount,
+      workers: workerCount,
       zones: zoneCount,
     };
   };
@@ -190,13 +190,13 @@ export function ExportTools() {
                 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="group-by-truck"
-                    checked={exportOptions.groupByTruck}
+                    id="group-by-worker"
+                    checked={exportOptions.groupByWorker}
                     onCheckedChange={(checked) => 
-                      setExportOptions(prev => ({ ...prev, groupByTruck: checked as boolean }))
+                      setExportOptions(prev => ({ ...prev, groupByWorker: checked as boolean }))
                     }
                   />
-                  <label htmlFor="group-by-truck" className="text-sm">Group by truck</label>
+                  <label htmlFor="group-by-worker" className="text-sm">Group by worker</label>
                 </div>
               </div>
             </div>
@@ -211,9 +211,9 @@ export function ExportTools() {
                   <span className="text-muted-foreground">assignments</span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <Truck className="h-3 w-3" />
-                  <span>{preview.trucks}</span>
-                  <span className="text-muted-foreground">trucks</span>
+                  <Users className="h-3 w-3" />
+                  <span>{preview.workers}</span>
+                  <span className="text-muted-foreground">workers</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <MapPin className="h-3 w-3" />

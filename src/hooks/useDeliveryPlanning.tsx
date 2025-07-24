@@ -6,7 +6,6 @@ import {
   DeliveryAssignment,
   Zone,
   ZoneGroup,
-  Truck,
   Worker,
   CalendarNote,
   ConflictType,
@@ -37,11 +36,7 @@ const defaultWorkers: Worker[] = [
   { id: 'w6', name: 'Lisa Brown', initials: 'LB', skills: ['helper'] },
 ];
 
-const defaultTrucks: Truck[] = [
-  { id: 't1', name: 'Truck 01', capacity: 100, workers: [defaultWorkers[0], defaultWorkers[1]], status: 'available' },
-  { id: 't2', name: 'Truck 02', capacity: 100, workers: [defaultWorkers[2], defaultWorkers[3]], status: 'available' },
-  { id: 't3', name: 'Truck 03', capacity: 100, workers: [defaultWorkers[4], defaultWorkers[5]], status: 'available' },
-];
+// Trucks removed - workers are now managed directly
 
 export const timeSlots: TimeSlot[] = [
   { id: 'morning', start: '08:00', end: '12:00', label: 'Morning (08:00-12:00)' },
@@ -57,7 +52,7 @@ export function useDeliveryPlanning() {
     assignments: [],
     zones: defaultZones,
     zoneGroups: defaultZoneGroups,
-    trucks: defaultTrucks,
+    workers: defaultWorkers,
     notes: [],
     routes: [],
     filters: {},
@@ -73,20 +68,20 @@ export function useDeliveryPlanning() {
   const detectConflicts = useCallback((assignment: DeliveryAssignment): ConflictType[] => {
     const conflicts: ConflictType[] = [];
     
-    // Check for double booking
+    // Check for double booking (worker conflicts)
     const existingAssignments = state.assignments.filter(a => 
       isSameDay(a.date, assignment.date) && 
       a.timeSlot === assignment.timeSlot &&
-      a.truck?.id === assignment.truck?.id
+      a.workers?.some(worker => assignment.workers?.some(w => w.id === worker.id))
     );
     
     if (existingAssignments.length > 0) {
       conflicts.push({
         type: 'double_booking',
         severity: 'high',
-        message: 'Truck already assigned to this time slot',
-        reason: 'This truck is already assigned to another zone/group during this time period',
-        suggestion: 'Choose a different truck or time slot'
+        message: 'Worker already assigned to this time slot',
+        reason: 'One or more workers are already assigned to another zone/group during this time period',
+        suggestion: 'Choose different workers or time slot'
       });
     }
 
@@ -141,13 +136,13 @@ export function useDeliveryPlanning() {
         };
         break;
 
-      case 'truck':
-        const truck = dragData.data as Truck;
+      case 'worker':
+        const worker = dragData.data as Worker;
         newAssignment = {
           id: assignmentId,
           date,
           timeSlot,
-          truck,
+          workers: [worker],
           deliveryCount: 0,
           postcodes: [],
           status: 'assigned'
@@ -189,22 +184,22 @@ export function useDeliveryPlanning() {
       postcodes.some(pc => zone.postcodes.some(zpc => pc.startsWith(zpc)))
     );
 
-    // Find available truck
-    const availableTruck = state.trucks.find(truck => 
+    // Find available workers
+    const availableWorkers = state.workers.filter(worker => 
       !state.assignments.some(a => 
         isSameDay(a.date, date) && 
         a.timeSlot === timeSlot && 
-        a.truck?.id === truck.id
+        a.workers?.some(w => w.id === worker.id)
       )
     );
 
-    if (bestZone && availableTruck) {
+    if (bestZone && availableWorkers.length > 0) {
       const assignment: DeliveryAssignment = {
         id: `smart-${format(date, 'yyyy-MM-dd')}-${timeSlot}-${Date.now()}`,
         date,
         timeSlot,
         zone: bestZone,
-        truck: availableTruck,
+        workers: availableWorkers.slice(0, 2), // Assign up to 2 workers
         deliveryCount: postcodes.length,
         postcodes,
         status: 'assigned'
@@ -217,10 +212,10 @@ export function useDeliveryPlanning() {
 
       toast({
         title: "Smart assignment created",
-        description: `${postcodes.length} deliveries assigned to ${bestZone.name} via ${availableTruck.name}`,
+        description: `${postcodes.length} deliveries assigned to ${bestZone.name}`,
       });
     }
-  }, [state.zones, state.trucks, state.assignments, toast]);
+  }, [state.zones, state.workers, state.assignments, toast]);
 
   // Update state functions
   const updateDate = useCallback((date: Date) => {
@@ -317,9 +312,8 @@ export function useDeliveryPlanning() {
   // Get filtered assignments
   const filteredAssignments = useMemo(() => {
     return state.assignments.filter(assignment => {
-      if (state.filters.truck && assignment.truck?.id !== state.filters.truck) return false;
       if (state.filters.zone && assignment.zone?.id !== state.filters.zone) return false;
-      if (state.filters.worker && !assignment.truck?.workers.some(w => w.id === state.filters.worker)) return false;
+      if (state.filters.worker && !assignment.workers?.some(w => w.id === state.filters.worker)) return false;
       if (state.filters.postcode && !assignment.postcodes.some(pc => pc.includes(state.filters.postcode!))) return false;
       return true;
     });

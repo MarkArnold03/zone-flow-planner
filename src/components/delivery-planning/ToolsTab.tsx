@@ -15,7 +15,7 @@ export function ToolsTab() {
   };
 
   const clearFilters = () => {
-    updateFilters({ truck: undefined, zone: undefined, worker: undefined, postcode: undefined });
+    updateFilters({ zone: undefined, worker: undefined, postcode: undefined });
   };
 
   const getConflictCount = () => {
