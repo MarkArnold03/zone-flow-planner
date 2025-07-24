@@ -4,7 +4,7 @@ import { PlanningSidebar } from './PlanningSidebar';
 
 export function DeliveryPlanningApp() {
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex animate-fade-in">
       <PlanningSidebar />
       <PlanningCalendar />
     </div>

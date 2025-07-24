@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { MapPin, Users, Package, Settings, Search } from 'lucide-react';
+import { MapPin, Users, Package, Settings, Search, Route } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { ZonesTab } from './ZonesTab';
 import { ZoneGroupsTab } from './ZoneGroupsTab';
 import { TrucksTab } from './TrucksTab';
 import { ToolsTab } from './ToolsTab';
+import { RouteVisualization } from './RouteVisualization';
+import { RouteOptimizer } from './RouteOptimizer';
 import { NotesAnnotations } from './NotesAnnotations';
 
 export function PlanningSidebar() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="w-80 border-r bg-card shadow-lg flex flex-col">
+    <div className="w-80 border-r bg-card shadow-lg flex flex-col animate-slide-in-right">
       {/* Sidebar Header */}
       <div className="p-4 border-b space-y-3">
         <div>
@@ -38,7 +40,7 @@ export function PlanningSidebar() {
 
       {/* Tabs */}
       <Tabs defaultValue="zones" className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-4 mx-4 mt-4">
+        <TabsList className="grid w-full grid-cols-5 mx-4 mt-4">
           <TabsTrigger value="zones" className="text-xs">
             <MapPin className="h-3 w-3 mr-1" />
             Zones
@@ -50,6 +52,10 @@ export function PlanningSidebar() {
           <TabsTrigger value="trucks" className="text-xs">
             <Users className="h-3 w-3 mr-1" />
             Trucks
+          </TabsTrigger>
+          <TabsTrigger value="routes" className="text-xs">
+            <Route className="h-3 w-3 mr-1" />
+            Routes
           </TabsTrigger>
           <TabsTrigger value="tools" className="text-xs">
             <Settings className="h-3 w-3 mr-1" />
@@ -68,6 +74,17 @@ export function PlanningSidebar() {
           
           <TabsContent value="trucks" className="h-full p-0 m-0">
             <TrucksTab searchQuery={searchQuery} />
+          </TabsContent>
+          
+          <TabsContent value="routes" className="h-full p-0 m-0">
+            <div className="p-4 space-y-4 h-full overflow-y-auto">
+              <RouteVisualization 
+                zones={[]} 
+                assignments={[]} 
+                selectedDate={new Date()} 
+              />
+              <RouteOptimizer onOptimize={() => {}} />
+            </div>
           </TabsContent>
           
           <TabsContent value="tools" className="h-full p-0 m-0">

@@ -38,7 +38,7 @@ export function PlanningCalendar() {
   };
 
   return (
-    <div className="flex-1 p-6 space-y-6">
+    <div className="flex-1 p-6 space-y-6 animate-fade-in">
       <PlanningHeader />
       
       {/* View Toggle */}
@@ -80,7 +80,7 @@ export function PlanningCalendar() {
       </div>
 
       {/* Calendar View */}
-      <Card className="p-6">
+      <Card className="p-6 hover:shadow-lg transition-shadow duration-200">
         {state.viewMode === 'week' ? (
           <WeekView
             onDrop={onDrop}

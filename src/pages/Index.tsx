@@ -1,7 +1,7 @@
-import { CalendarPlanning } from '@/components/CalendarPlanning';
+import { DeliveryPlanningApp } from '@/components/delivery-planning/DeliveryPlanningApp';
 
 const Index = () => {
-  return <CalendarPlanning />;
+  return <DeliveryPlanningApp />;
 };
 
 export default Index;
