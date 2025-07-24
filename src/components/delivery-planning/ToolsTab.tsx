@@ -48,18 +48,18 @@ export function ToolsTab() {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Truck Filter */}
+          {/* Worker Filter */}
           <div>
-            <label className="text-xs text-muted-foreground">Truck</label>
-            <Select onValueChange={(value) => handleFilterChange('truck', value)}>
+            <label className="text-xs text-muted-foreground">Worker</label>
+            <Select onValueChange={(value) => handleFilterChange('worker', value)}>
               <SelectTrigger className="h-8">
-                <SelectValue placeholder="All trucks" />
+                <SelectValue placeholder="All workers" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All trucks</SelectItem>
-                {state.trucks.map((truck) => (
-                  <SelectItem key={truck.id} value={truck.id}>
-                    {truck.name}
+                <SelectItem value="all">All workers</SelectItem>
+                {state.workers.map((worker) => (
+                  <SelectItem key={worker.id} value={worker.id}>
+                    {worker.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -84,23 +84,6 @@ export function ToolsTab() {
             </Select>
           </div>
 
-          {/* Worker Filter */}
-          <div>
-            <label className="text-xs text-muted-foreground">Worker</label>
-            <Select onValueChange={(value) => handleFilterChange('worker', value)}>
-              <SelectTrigger className="h-8">
-                <SelectValue placeholder="All workers" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All workers</SelectItem>
-                {state.trucks.flatMap(truck => truck.workers).map((worker) => (
-                  <SelectItem key={worker.id} value={worker.id}>
-                    {worker.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </CardContent>
       </Card>
 
@@ -121,9 +104,9 @@ export function ToolsTab() {
             </Badge>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span>Available Trucks:</span>
+            <span>Available Workers:</span>
             <Badge variant="secondary">
-              {state.trucks.filter(t => t.status === 'available').length}
+              {state.workers.length}
             </Badge>
           </div>
         </CardContent>

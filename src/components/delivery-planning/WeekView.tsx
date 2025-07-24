@@ -123,16 +123,15 @@ export function WeekView({ onDrop, onDragOver, getAssignments }: WeekViewProps) 
                                 </Badge>
                               )}
 
-                              {/* Truck Info */}
-                              {assignment.truck && (
+                              {/* Worker Info */}
+                              {assignment.workers && assignment.workers.length > 0 && (
                                 <div className="text-xs text-muted-foreground space-y-1">
                                   <div className="flex items-center space-x-1">
-                                    🚛 <span className="font-medium">{assignment.truck.name}</span>
+                                    👥 <span className="font-medium">Workers</span>
                                   </div>
                                   <div className="flex items-center space-x-1">
-                                    👥 
                                     <div className="flex space-x-1">
-                                      {assignment.truck.workers.map((worker) => (
+                                      {assignment.workers.map((worker) => (
                                         <span 
                                           key={worker.id}
                                           className="inline-flex items-center justify-center w-5 h-5 bg-primary/10 text-primary rounded-full text-xs font-medium"
