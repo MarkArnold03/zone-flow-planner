@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,7 @@ import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { WeekView } from './WeekView';
 import { MonthView } from './MonthView';
 import { PlanningHeader } from './PlanningHeader';
+import { TimeSlotCarousel } from './TimeSlotCarousel';
 
 export function PlanningCalendar() {
   const {
@@ -15,6 +17,8 @@ export function PlanningCalendar() {
     getAssignments,
     handleDrop,
   } = useDeliveryPlanning();
+
+  const [showCarousel, setShowCarousel] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -27,8 +31,13 @@ export function PlanningCalendar() {
     const zoneData = e.dataTransfer.getData('zone');
     const zoneGroupData = e.dataTransfer.getData('zoneGroup');
     const workerData = e.dataTransfer.getData('worker');
+    const assignmentData = e.dataTransfer.getData('assignment');
 
-    if (zoneData) {
+    if (assignmentData) {
+      // Handle assignment moving
+      const assignment = JSON.parse(assignmentData);
+      handleDrop(assignment, date, timeSlot);
+    } else if (zoneData) {
       handleDrop({ type: 'zone', data: JSON.parse(zoneData) }, date, timeSlot);
     } else if (zoneGroupData) {
       handleDrop({ type: 'zoneGroup', data: JSON.parse(zoneGroupData) }, date, timeSlot);
@@ -47,7 +56,10 @@ export function PlanningCalendar() {
           <Button
             variant={state.viewMode === 'week' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => updateViewMode('week')}
+            onClick={() => {
+              updateViewMode('week');
+              setShowCarousel(false);
+            }}
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
             Week View
@@ -55,10 +67,21 @@ export function PlanningCalendar() {
           <Button
             variant={state.viewMode === 'month' ? 'default' : 'outline'}
             size="sm"
-            onClick={() => updateViewMode('month')}
+            onClick={() => {
+              updateViewMode('month');
+              setShowCarousel(false);
+            }}
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
             Month View
+          </Button>
+          <Button
+            variant={showCarousel ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowCarousel(!showCarousel)}
+          >
+            <Clock className="h-4 w-4 mr-2" />
+            Time Carousel
           </Button>
         </div>
         
@@ -81,7 +104,14 @@ export function PlanningCalendar() {
 
       {/* Calendar View */}
       <Card className="p-6 hover:shadow-lg transition-shadow duration-200">
-        {state.viewMode === 'week' ? (
+        {showCarousel ? (
+          <TimeSlotCarousel
+            selectedDate={state.currentDate}
+            onDrop={onDrop}
+            onDragOver={handleDragOver}
+            getAssignments={getAssignments}
+          />
+        ) : state.viewMode === 'week' ? (
           <WeekView
             onDrop={onDrop}
             onDragOver={handleDragOver}

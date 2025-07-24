@@ -36,12 +36,16 @@ const defaultWorkers: Worker[] = [
   { id: 'w6', name: 'Lisa Brown', initials: 'LB', skills: ['helper'] },
 ];
 
-// Trucks removed - workers are now managed directly
-
-export const timeSlots: TimeSlot[] = [
-  { id: 'morning', start: '08:00', end: '12:00', label: 'Morning (08:00-12:00)' },
-  { id: 'afternoon', start: '12:00', end: '16:00', label: 'Afternoon (12:00-16:00)' },
-];
+// Updated time slots for 5 AM to 9 PM
+export const timeSlots: TimeSlot[] = Array.from({ length: 17 }, (_, i) => {
+  const hour = i + 5;
+  return {
+    id: `${hour}`,
+    start: `${hour.toString().padStart(2, '0')}:00`,
+    end: `${(hour + 1).toString().padStart(2, '0')}:00`,
+    label: `${hour.toString().padStart(2, '0')}:00-${(hour + 1).toString().padStart(2, '0')}:00`
+  };
+});
 
 export function useDeliveryPlanning() {
   const { toast } = useToast();
@@ -99,32 +103,55 @@ export function useDeliveryPlanning() {
     return conflicts;
   }, [state.assignments]);
 
-  // Handle drop operations
+  // Enhanced handle drop to support assignment moving
   const handleDrop = useCallback((
-    dragData: DragData,
+    dragData: DragData | DeliveryAssignment,
     date: Date,
     timeSlot: string
   ) => {
+    // Check if it's an existing assignment being moved
+    if ('date' in dragData && 'timeSlot' in dragData) {
+      const assignment = dragData as DeliveryAssignment;
+      
+      // Update the assignment's date and time slot
+      setState(prev => ({
+        ...prev,
+        assignments: prev.assignments.map(a => 
+          a.id === assignment.id 
+            ? { ...a, date, timeSlot }
+            : a
+        )
+      }));
+
+      toast({
+        title: "Assignment moved",
+        description: `Assignment moved to ${format(date, 'EEE dd')} ${timeSlot}:00`,
+      });
+      return;
+    }
+
+    // Handle new zone/group/worker drops (existing logic)
+    const data = dragData as DragData;
     const assignmentId = `${format(date, 'yyyy-MM-dd')}-${timeSlot}-${Date.now()}`;
     
     let newAssignment: DeliveryAssignment;
 
-    switch (dragData.type) {
+    switch (data.type) {
       case 'zone':
-        const zone = dragData.data as Zone;
+        const zone = data.data as Zone;
         newAssignment = {
           id: assignmentId,
           date,
           timeSlot,
           zone,
-          deliveryCount: Math.floor(zone.capacity * 0.8), // 80% of capacity
+          deliveryCount: Math.floor(zone.capacity * 0.8),
           postcodes: zone.postcodes,
           status: 'planned'
         };
         break;
 
       case 'zoneGroup':
-        const zoneGroup = dragData.data as ZoneGroup;
+        const zoneGroup = data.data as ZoneGroup;
         newAssignment = {
           id: assignmentId,
           date,
@@ -137,7 +164,7 @@ export function useDeliveryPlanning() {
         break;
 
       case 'worker':
-        const worker = dragData.data as Worker;
+        const worker = data.data as Worker;
         newAssignment = {
           id: assignmentId,
           date,
@@ -153,7 +180,6 @@ export function useDeliveryPlanning() {
         return;
     }
 
-    // Detect conflicts
     const conflicts = detectConflicts(newAssignment);
     newAssignment.conflicts = conflicts;
 
@@ -162,7 +188,6 @@ export function useDeliveryPlanning() {
       assignments: [...prev.assignments, newAssignment]
     }));
 
-    // Show feedback
     if (conflicts.length > 0) {
       toast({
         title: "Assignment created with conflicts",
@@ -172,7 +197,7 @@ export function useDeliveryPlanning() {
     } else {
       toast({
         title: "Assignment created",
-        description: `Assignment created for ${format(date, 'EEE dd')} ${timeSlot}`,
+        description: `Assignment created for ${format(date, 'EEE dd')} ${timeSlot}:00`,
       });
     }
   }, [detectConflicts, toast]);

@@ -17,11 +17,13 @@ import { useToast } from '@/hooks/use-toast';
 import { ZoneNode } from './ZoneNode';
 import { CalendarSlotNode } from './CalendarSlotNode';
 
-const timeSlots = [
-  { id: '08-12', label: '08:00 - 12:00' },
-  { id: '12-16', label: '12:00 - 16:00' },
-  { id: '16-20', label: '16:00 - 20:00' },
-];
+const timeSlots = Array.from({ length: 17 }, (_, i) => {
+  const hour = i + 5;
+  return {
+    id: `${hour}`,
+    label: `${hour.toString().padStart(2, '0')}:00 - ${(hour + 1).toString().padStart(2, '0')}:00`
+  };
+});
 
 const zones = [
   { id: 'stockholm', name: 'Stockholm', color: '#3B82F6' },
@@ -101,7 +103,7 @@ export function FlowCanvas({ weekDays }: FlowCanvasProps) {
       });
     });
 
-    // Create calendar slot nodes
+    // Create calendar slot nodes with new time range
     timeSlots.forEach((slot, slotIndex) => {
       weekDays.forEach((day, dayIndex) => {
         const nodeId = `slot-${format(day, 'yyyy-MM-dd')}-${slot.id}`;
