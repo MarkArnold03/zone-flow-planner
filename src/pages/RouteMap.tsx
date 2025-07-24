@@ -19,13 +19,13 @@ export default function RouteMap() {
   
   const [mapboxToken, setMapboxToken] = useState('');
   const [selectedDate, setSelectedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [selectedTruck, setSelectedTruck] = useState<string>('');
+  const [selectedWorker, setSelectedWorker] = useState<string>('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
 
   // Filter assignments based on selections
   const filteredAssignments = state.assignments.filter(assignment => {
     const matchesDate = format(assignment.date, 'yyyy-MM-dd') === selectedDate;
-    const matchesWorker = !selectedTruck || assignment.workers?.some(w => w.id === selectedTruck);
+    const matchesWorker = !selectedWorker || assignment.workers?.some(w => w.id === selectedWorker);
     const matchesTimeSlot = !selectedTimeSlot || assignment.timeSlot === selectedTimeSlot;
     return matchesDate && matchesWorker && matchesTimeSlot;
   });
@@ -234,7 +234,7 @@ export default function RouteMap() {
 
                 <div>
                   <label className="text-sm font-medium">Worker</label>
-                  <Select value={selectedTruck} onValueChange={setSelectedTruck}>
+                  <Select value={selectedWorker} onValueChange={setSelectedWorker}>
                     <SelectTrigger>
                       <SelectValue placeholder="All workers" />
                     </SelectTrigger>
