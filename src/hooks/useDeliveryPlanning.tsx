@@ -11,15 +11,16 @@ import {
   CalendarNote,
   ConflictType,
   DragData,
-  TimeSlot
+  TimeSlot,
+  Order
 } from '@/types/delivery-planning';
 
 // Default data
 const defaultZones: Zone[] = [
-  { id: 'fm', name: 'FM', color: '#3B82F6', postcodes: ['SE1', 'SE2'], capacity: 50 },
-  { id: 'em', name: 'EM', color: '#10B981', postcodes: ['E1', 'E2'], capacity: 45 },
-  { id: 'zon1', name: 'Zon1', color: '#8B5CF6', postcodes: ['N1', 'N2'], capacity: 40 },
-  { id: 'zon2', name: 'Zon2', color: '#F59E0B', postcodes: ['W1', 'W2'], capacity: 35 },
+  { id: 'fm', name: 'FM', color: '#3B82F6', postcodes: ['SE1', 'SE2'], capacity: 50, orders: [] },
+  { id: 'em', name: 'EM', color: '#10B981', postcodes: ['E1', 'E2'], capacity: 45, orders: [] },
+  { id: 'zon1', name: 'Zon1', color: '#8B5CF6', postcodes: ['N1', 'N2'], capacity: 40, orders: [] },
+  { id: 'zon2', name: 'Zon2', color: '#F59E0B', postcodes: ['W1', 'W2'], capacity: 35, orders: [] },
 ];
 
 const defaultZoneGroups: ZoneGroup[] = [
@@ -83,7 +84,9 @@ export function useDeliveryPlanning() {
       conflicts.push({
         type: 'double_booking',
         severity: 'high',
-        message: 'Truck already assigned to this time slot'
+        message: 'Truck already assigned to this time slot',
+        reason: 'This truck is already assigned to another zone/group during this time period',
+        suggestion: 'Choose a different truck or time slot'
       });
     }
 
@@ -92,7 +95,9 @@ export function useDeliveryPlanning() {
       conflicts.push({
         type: 'capacity_exceeded',
         severity: 'medium',
-        message: `Delivery count exceeds zone capacity (${assignment.zone.capacity})`
+        message: `Delivery count exceeds zone capacity (${assignment.zone.capacity})`,
+        reason: `Delivery count (${assignment.deliveryCount}) exceeds zone capacity (${assignment.zone.capacity})`,
+        suggestion: 'Reduce delivery count or increase zone capacity'
       });
     }
 
@@ -236,6 +241,53 @@ export function useDeliveryPlanning() {
     toast({ title: "Zone added", description: `${zone.name} has been added` });
   }, [toast]);
 
+  const updateZone = useCallback((updatedZone: Zone) => {
+    setState(prev => ({
+      ...prev,
+      zones: prev.zones.map(zone => 
+        zone.id === updatedZone.id ? updatedZone : zone
+      ),
+    }));
+    toast({ title: "Zone updated", description: `${updatedZone.name} has been updated` });
+  }, [toast]);
+
+  const removeZone = useCallback((zoneId: string) => {
+    setState(prev => ({
+      ...prev,
+      zones: prev.zones.filter(zone => zone.id !== zoneId),
+      assignments: prev.assignments.filter(assignment => assignment.zone?.id !== zoneId),
+    }));
+    toast({ title: "Zone removed" });
+  }, [toast]);
+
+  const addOrderToZone = useCallback((zoneId: string, order: Omit<Order, 'id'>) => {
+    const newOrder: Order = {
+      ...order,
+      id: `order-${Date.now()}`,
+    };
+    setState(prev => ({
+      ...prev,
+      zones: prev.zones.map(zone =>
+        zone.id === zoneId
+          ? { ...zone, orders: [...zone.orders, newOrder] }
+          : zone
+      ),
+    }));
+    toast({ title: "Order added", description: `Order added to zone` });
+  }, [toast]);
+
+  const removeOrderFromZone = useCallback((zoneId: string, orderId: string) => {
+    setState(prev => ({
+      ...prev,
+      zones: prev.zones.map(zone =>
+        zone.id === zoneId
+          ? { ...zone, orders: zone.orders.filter(order => order.id !== orderId) }
+          : zone
+      ),
+    }));
+    toast({ title: "Order removed" });
+  }, [toast]);
+
   const addZoneGroup = useCallback((group: Omit<ZoneGroup, 'id'>) => {
     const newGroup: ZoneGroup = { ...group, id: `group-${Date.now()}` };
     setState(prev => ({ ...prev, zoneGroups: [...prev.zoneGroups, newGroup] }));
@@ -283,6 +335,10 @@ export function useDeliveryPlanning() {
     updateViewMode,
     updateFilters,
     addZone,
+    updateZone,
+    removeZone,
+    addOrderToZone,
+    removeOrderFromZone,
     addZoneGroup,
     addNote,
     removeAssignment,

@@ -1,12 +1,14 @@
 import React from 'react';
 import { format, addWeeks, subWeeks, addMonths, subMonths } from 'date-fns';
-import { ChevronLeft, ChevronRight, Download, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { ExportTools } from './ExportTools';
 
 export function PlanningHeader() {
   const { state, updateDate } = useDeliveryPlanning();
+  const navigate = useNavigate();
 
   const goToPrevious = () => {
     const newDate = state.viewMode === 'week' 
@@ -58,6 +60,10 @@ export function PlanningHeader() {
         </h2>
         
         <div className="flex items-center space-x-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/route-map')}>
+            <MapPin className="h-4 w-4 mr-2" />
+            Route Map
+          </Button>
           <ExportTools />
           <Button variant="outline" size="sm">
             <Settings className="h-4 w-4 mr-2" />

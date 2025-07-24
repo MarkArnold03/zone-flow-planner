@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MapPin, Users, Package, Settings, Search, Route } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { ZonesTab } from './ZonesTab';
+import { ZoneManagement } from './ZoneManagement';
 import { ZoneGroupsTab } from './ZoneGroupsTab';
 import { TrucksTab } from './TrucksTab';
 import { ToolsTab } from './ToolsTab';
@@ -65,7 +65,7 @@ export function PlanningSidebar() {
 
         <div className="flex-1 overflow-hidden">
           <TabsContent value="zones" className="h-full p-0 m-0">
-            <ZonesTab searchQuery={searchQuery} />
+            <ZoneManagement searchQuery={searchQuery} />
           </TabsContent>
           
           <TabsContent value="groups" className="h-full p-0 m-0">

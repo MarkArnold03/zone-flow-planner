@@ -1,9 +1,20 @@
+export interface Order {
+  id: string;
+  postcode: string;
+  address: string;
+  deliveryCount: number;
+  priority: 'high' | 'medium' | 'low';
+  estimatedDuration: number;
+  notes?: string;
+}
+
 export interface Zone {
   id: string;
   name: string;
   color: string;
   postcodes: string[];
   capacity: number;
+  orders: Order[];
 }
 
 export interface ZoneGroup {
@@ -52,9 +63,11 @@ export interface DeliveryAssignment {
 }
 
 export interface ConflictType {
-  type: 'capacity_exceeded' | 'double_booking' | 'worker_conflict' | 'zone_overlap';
+  type: 'capacity_exceeded' | 'double_booking' | 'worker_conflict' | 'zone_overlap' | 'insufficient_time' | 'truck_unavailable';
   severity: 'low' | 'medium' | 'high';
   message: string;
+  reason: string;
+  suggestion?: string;
 }
 
 export interface CalendarNote {

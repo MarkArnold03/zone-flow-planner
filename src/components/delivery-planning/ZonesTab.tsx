@@ -35,7 +35,7 @@ export function ZonesTab({ searchQuery }: ZonesTabProps) {
 
   const handleAddZone = () => {
     if (newZone.name && newZone.postcodes.length > 0) {
-      addZone(newZone);
+      addZone({ ...newZone, orders: [] });
       setNewZone({ name: '', color: '#3B82F6', postcodes: [], capacity: 50 });
       setIsAddDialogOpen(false);
     }
