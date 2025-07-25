@@ -147,24 +147,24 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
   }, [getAssignments]);
 
   return (
-    <div className="h-full bg-background rounded-lg flex flex-col" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+    <div className="h-full bg-gradient-card rounded-lg flex flex-col shadow-medium relative z-10 animate-fade-in" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       {/* Selection Display */}
       {dragSelection && (
-        <div className="p-2 bg-muted/50 border-b border-muted-foreground/20 flex items-center justify-between">
-          <span className="text-sm text-primary">
+        <div className="p-2 glass border-b border-border/30 flex items-center justify-between animate-slide-up shadow-inner">
+          <span className="text-sm text-primary bg-gradient-primary bg-clip-text text-transparent font-medium">
             Selected: {format(dragSelection.date, 'EEE dd')} {dragSelection.startHour}:00 - {dragSelection.endHour}:00
           </span>
-          <Button variant="ghost" size="sm" onClick={clearSelection}>
+          <Button variant="ghost" size="sm" onClick={clearSelection} className="hover-scale">
             <X className="h-4 w-4" />
           </Button>
         </div>
       )}
       
       {/* Calendar Header - Time slots horizontal */}
-      <div className="border-b border-border">
+      <div className="border-b border-border/50 bg-gradient-header">
         <div className="flex">
           {/* Empty corner cell */}
-          <div className="w-20 sm:w-24 md:w-32 p-1 sm:p-2 md:p-4 border-r border-border bg-muted/30 flex-shrink-0">
+          <div className="w-20 sm:w-24 md:w-32 p-1 sm:p-2 md:p-4 border-r border-border/50 glass flex-shrink-0 shadow-inner">
             <div className="text-xs md:text-sm font-medium text-muted-foreground">Time / Date</div>
           </div>
           
@@ -174,8 +174,8 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
               {timeSlots.map((slot) => (
                   <div 
                     key={slot.id}
-                    className={`w-16 sm:w-20 md:w-24 p-1 md:p-2 text-center border-r border-border bg-muted/30 last:border-r-0 flex-shrink-0 transition-colors ${
-                      weekDays.some(day => isCurrentHour(day, parseInt(slot.id))) ? 'bg-today-time-bg border-today-time' : ''
+                    className={`w-16 sm:w-20 md:w-24 p-1 md:p-2 text-center border-r border-border/50 glass last:border-r-0 flex-shrink-0 transition-all duration-300 hover:shadow-inner ${
+                      weekDays.some(day => isCurrentHour(day, parseInt(slot.id))) ? 'bg-today-time-bg border-today-time shadow-glow' : ''
                     }`}
                   >
                     <div className={`text-xs font-medium ${
@@ -197,15 +197,15 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
         {weekDays.map((day, dayIndex) => (
           <div key={day.toISOString()} className="flex border-b border-border/30 last:border-b-0">
             {/* Date column - vertical */}
-            <div className={`w-20 sm:w-24 md:w-32 p-1 sm:p-2 md:p-4 border-r border-border bg-muted/30 flex-shrink-0 flex flex-col justify-center transition-colors ${getTodayClasses(day)}`}>
-              <div className={`text-xs md:text-sm font-medium ${isToday(day) ? 'text-today-time' : 'text-muted-foreground'}`}>
+            <div className={`w-20 sm:w-24 md:w-32 p-1 sm:p-2 md:p-4 border-r border-border/50 glass flex-shrink-0 flex flex-col justify-center transition-all duration-300 hover:shadow-inner ${getTodayClasses(day) || 'shadow-soft'}`}>
+              <div className={`text-xs md:text-sm font-medium transition-colors duration-200 ${isToday(day) ? 'text-today-time' : 'text-muted-foreground'}`}>
                 <span className="hidden md:inline">{format(day, 'EEEE')}</span>
                 <span className="md:hidden">{format(day, 'EEE')}</span>
               </div>
-              <div className={`text-base sm:text-lg md:text-2xl font-semibold ${isToday(day) ? 'text-today-time' : 'text-primary'}`}>
+              <div className={`text-base sm:text-lg md:text-2xl font-semibold transition-all duration-200 ${isToday(day) ? 'text-today-time animate-glow' : 'text-primary'}`}>
                 {format(day, 'd')}
               </div>
-              <div className={`text-xs hidden md:block ${isToday(day) ? 'text-today-time/80' : 'text-muted-foreground'}`}>
+              <div className={`text-xs hidden md:block transition-colors duration-200 ${isToday(day) ? 'text-today-time/80' : 'text-muted-foreground'}`}>
                 {format(day, 'MMM yyyy')}
               </div>
             </div>
@@ -224,11 +224,11 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                   return (
                     <div
                       key={`${day.toISOString()}-${slot.id}`}
-                      className={`w-16 sm:w-20 md:w-24 h-12 sm:h-16 md:h-20 border-r border-border last:border-r-0 relative transition-all duration-200 cursor-pointer select-none flex-shrink-0 ${
-                        inDragRange ? 'bg-primary/20 border-primary/40' : 
-                        inSelection ? 'bg-primary/15 border-2 border-primary/50 shadow-sm' :
+                      className={`w-16 sm:w-20 md:w-24 h-12 sm:h-16 md:h-20 border-r border-border/50 last:border-r-0 relative transition-all duration-300 cursor-pointer select-none flex-shrink-0 interactive ${
+                        inDragRange ? 'bg-gradient-primary/20 border-primary/40 shadow-glow' : 
+                        inSelection ? 'bg-gradient-primary/15 border-2 border-primary/50 shadow-float animate-glow' :
                         getCurrentTimeClasses(day, hour) ||
-                        (isToday(day) ? 'bg-today-highlight/50' : 'hover:bg-muted/50')
+                        (isToday(day) ? 'bg-today-highlight/50 shadow-soft' : 'hover:bg-muted/50 hover:shadow-inner')
                       }`}
                       onDrop={(e) => onDrop(e, day, slot.id)}
                       onDragOver={onDragOver}
@@ -245,14 +245,14 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                           const calculatedWidth = hourSpan * cellWidth + (hourSpan - 1) * borderWidth;
                          
                          return (
-                            <div 
-                              key={assignment.id} 
-                              className={`absolute top-0.5 bottom-0.5 left-0.5 rounded-lg p-1 sm:p-2 group cursor-pointer shadow-medium border-l-4 z-20 overflow-hidden flex flex-col transition-all hover:shadow-lg ${
-                                conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50' :
-                                conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50' :
-                                conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10' :
-                                'bg-primary/5 border-primary text-primary dark:bg-primary/10'
-                              }`}
+                             <div 
+                               key={assignment.id} 
+                               className={`absolute top-0.5 bottom-0.5 left-0.5 rounded-lg p-1 sm:p-2 group cursor-pointer shadow-heavy border-l-4 z-20 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-glow hover:scale-102 ${
+                                 conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50 shadow-glow' :
+                                 conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50 shadow-medium' :
+                                 conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10 shadow-soft' :
+                                 'bg-gradient-card border-primary text-primary shadow-float'
+                               }`}
                               style={{
                                 width: `${calculatedWidth - 2}px`, // Account for left margin
                                 backgroundColor: assignment.zone?.color ? `${assignment.zone.color}15` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}15` : undefined,
@@ -278,28 +278,28 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                               {/* Edit and Remove Buttons */}
                               <div className="flex-1 flex justify-end items-start">
                                 <div className="flex gap-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-muted/20"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setEditingAssignment(assignment);
-                                    }}
-                                  >
-                                    <Edit className="h-3 w-3 text-primary" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-destructive/20"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      removeAssignment(assignment.id);
-                                    }}
-                                  >
-                                    <X className="h-3 w-3 text-destructive" />
-                                  </Button>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="opacity-0 group-hover:opacity-100 transition-all duration-300 h-4 w-4 p-0 hover:bg-muted/20 hover:scale-110"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       setEditingAssignment(assignment);
+                                     }}
+                                   >
+                                     <Edit className="h-3 w-3 text-primary" />
+                                   </Button>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="opacity-0 group-hover:opacity-100 transition-all duration-300 h-4 w-4 p-0 hover:bg-destructive/20 hover:scale-110"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       removeAssignment(assignment.id);
+                                     }}
+                                   >
+                                     <X className="h-3 w-3 text-destructive" />
+                                   </Button>
                                 </div>
                               </div>
 
@@ -315,8 +315,8 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                     
                     {/* Show regular assignments (not stretched) if this cell is not hidden */}
                     {!isHidden && assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).length === 0 ? (
-                      <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                        <div className="text-xs text-gray-400">+</div>
+                      <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300 hover:scale-110">
+                        <div className="text-xs text-muted-foreground/50">+</div>
                       </div>
                     ) : !isHidden && (
                        <div className="p-0.5 sm:p-1 h-full overflow-hidden">
@@ -326,11 +326,11 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                             return (
                               <div 
                                 key={assignment.id} 
-                                className={`rounded-lg p-1 sm:p-2 relative group cursor-pointer shadow-medium border-l-4 h-full transition-all hover:shadow-lg flex flex-col ${
-                                  conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50' :
-                                  conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50' :
-                                 conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10' :
-                                 'bg-primary/5 border-primary text-primary dark:bg-primary/10'
+                                className={`rounded-lg p-1 sm:p-2 relative group cursor-pointer shadow-heavy border-l-4 h-full transition-all duration-300 hover:shadow-glow hover:scale-105 flex flex-col ${
+                                  conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50 shadow-glow' :
+                                  conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50 shadow-medium' :
+                                 conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10 shadow-soft' :
+                                 'bg-gradient-card border-primary text-primary shadow-float'
                                 }`}
                                 style={{
                                   backgroundColor: assignment.zone?.color ? `${assignment.zone.color}15` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}15` : undefined,

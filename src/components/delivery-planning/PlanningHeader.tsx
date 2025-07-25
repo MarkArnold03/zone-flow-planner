@@ -37,37 +37,37 @@ export function PlanningHeader() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass p-4 rounded-lg shadow-float border-border/30 animate-slide-up relative z-10">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-        <h1 className="text-responsive-lg font-bold text-foreground">
+        <h1 className="text-responsive-lg font-bold bg-gradient-primary bg-clip-text text-transparent animate-scale-in">
           Delivery Planning
         </h1>
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Button variant="outline" size="sm" onClick={goToPrevious}>
+        <div className="flex items-center gap-1 sm:gap-2 animate-slide-in-right" style={{ animationDelay: '0.1s' }}>
+          <Button variant="glass" size="sm" onClick={goToPrevious} className="hover-lift">
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={goToNext}>
+          <Button variant="glass" size="sm" onClick={goToNext} className="hover-lift">
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={goToToday} className="bg-today-highlight border-today-border text-today-time hover:bg-today-time-bg">
+          <Button variant="premium" size="sm" onClick={goToToday} className="bg-today-highlight border-today-border text-today-time hover:bg-today-time-bg shadow-glow">
             Today
           </Button>
         </div>
       </div>
       
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-        <h2 className="text-responsive-base font-semibold text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 animate-slide-in-right" style={{ animationDelay: '0.2s' }}>
+        <h2 className="text-responsive-base font-semibold text-muted-foreground animate-fade-in" style={{ animationDelay: '0.3s' }}>
           {getHeaderText()}
         </h2>
         
-        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => navigate('/route-map')} className="flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 flex-wrap animate-slide-up" style={{ animationDelay: '0.4s' }}>
+          <Button variant="glass" size="sm" onClick={() => navigate('/route-map')} className="flex-shrink-0 hover-lift">
             <MapPin className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Route Map</span>
           </Button>
           <ExportTools />
           <SettingsDialog>
-            <Button variant="outline" size="sm" className="flex-shrink-0">
+            <Button variant="glass" size="sm" className="flex-shrink-0 hover-lift">
               <Settings className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Settings</span>
             </Button>

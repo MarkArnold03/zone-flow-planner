@@ -46,13 +46,28 @@ All colors MUST be HSL.
     --nordic-light: 210 30% 95%;
     --nordic-accent: 200 85% 55%;
     
+    /* Advanced Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-    --gradient-card: linear-gradient(180deg, hsl(var(--card)), hsl(var(--nordic-light)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--nordic-light)/0.8));
+    --gradient-sidebar: linear-gradient(180deg, hsl(var(--sidebar-background)), hsl(var(--sidebar-background)/0.95));
+    --gradient-header: linear-gradient(90deg, hsl(var(--background)), hsl(var(--nordic-light)/0.3));
+    --gradient-glass: linear-gradient(135deg, hsl(var(--background)/0.8), hsl(var(--card)/0.9));
+    --gradient-accent: linear-gradient(45deg, hsl(var(--accent)), hsl(var(--primary)));
     
+    /* Advanced Shadows */
     --shadow-soft: 0 2px 20px -5px hsl(var(--primary) / 0.1);
     --shadow-medium: 0 8px 30px -8px hsl(var(--primary) / 0.15);
+    --shadow-heavy: 0 20px 40px -10px hsl(var(--primary) / 0.2);
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.3);
+    --shadow-inner: inset 0 2px 4px hsl(var(--muted) / 0.1);
+    --shadow-float: 0 4px 20px -2px hsl(var(--primary) / 0.12), 0 2px 8px -2px hsl(var(--primary) / 0.08);
     
+    /* Advanced Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-bounce: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --transition-fast: all 0.15s ease-out;
+    --transition-slow: all 0.5s ease-in-out;
 
     --radius: 0.5rem;
 
@@ -135,28 +150,150 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  /* Responsive utilities for perfect mobile experience */
+  /* Advanced Animation Utilities */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .animate-slide-in-right {
-    animation: slideInRight 0.3s ease-out;
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .animate-slide-up {
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
+  
+  .animate-bounce-in {
+    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  /* Advanced Hover Effects */
+  .hover-lift {
+    @apply transition-all duration-300 hover:shadow-float hover:-translate-y-1;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-glow;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+  
+  .hover-rotate {
+    @apply transition-transform duration-300 hover:rotate-3;
+  }
+  
+  /* Glass Morphism */
+  .glass {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+  
+  .glass-heavy {
+    background: hsl(var(--background) / 0.7);
+    backdrop-filter: blur(40px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.2);
+  }
+  
+  /* Gradient Backgrounds */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .bg-gradient-sidebar {
+    background: var(--gradient-sidebar);
+  }
+  
+  .bg-gradient-header {
+    background: var(--gradient-header);
+  }
+  
+  /* Advanced Shadows */
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-medium { box-shadow: var(--shadow-medium); }
+  .shadow-heavy { box-shadow: var(--shadow-heavy); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-inner { box-shadow: var(--shadow-inner); }
+  .shadow-float { box-shadow: var(--shadow-float); }
   
   /* Perfect responsive text scaling */
   .text-responsive-xs { @apply text-xs sm:text-sm; }
   .text-responsive-sm { @apply text-sm sm:text-base; }
   .text-responsive-base { @apply text-base sm:text-lg; }
   .text-responsive-lg { @apply text-lg sm:text-xl lg:text-2xl; }
+  
+  /* Interactive Elements */
+  .interactive {
+    @apply transition-all duration-200 cursor-pointer select-none hover:shadow-medium hover:-translate-y-0.5 active:translate-y-0 active:shadow-soft;
+  }
+  
+  .button-magnetic {
+    @apply relative transition-transform duration-300 hover:scale-105 active:scale-95;
+  }
+  
+  /* Loading States */
+  .skeleton {
+    @apply animate-pulse bg-muted/50 rounded;
+  }
+  
+  .shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 25%, 
+      hsl(var(--muted-foreground) / 0.1) 50%, 
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  @keyframes bounceIn {
+    from { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  @keyframes glow {
+    from { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
+    to { box-shadow: 0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.2); }
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
 }
