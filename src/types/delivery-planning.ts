@@ -46,6 +46,8 @@ export interface DeliveryAssignment {
   id: string;
   date: Date;
   timeSlot: string;
+  startHour?: number; // For multi-hour assignments
+  endHour?: number; // For multi-hour assignments
   zone?: Zone;
   zoneGroup?: ZoneGroup;
   workers?: Worker[]; // Direct worker assignment instead of through trucks
@@ -111,6 +113,8 @@ export interface PlanningState {
 export interface DragData {
   type: 'zone' | 'zoneGroup' | 'worker' | 'assignment';
   data: Zone | ZoneGroup | Worker | DeliveryAssignment;
+  startHour?: number; // For time-range assignments
+  endHour?: number; // For time-range assignments
 }
 
 export interface ExportOptions {

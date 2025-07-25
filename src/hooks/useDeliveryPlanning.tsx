@@ -177,6 +177,8 @@ export function useDeliveryPlanning() {
           id: assignmentId,
           date,
           timeSlot,
+          startHour: data.startHour,
+          endHour: data.endHour,
           zone,
           deliveryCount: Math.floor(zone.capacity * 0.8),
           postcodes: zone.postcodes,
@@ -190,6 +192,8 @@ export function useDeliveryPlanning() {
           id: assignmentId,
           date,
           timeSlot,
+          startHour: data.startHour,
+          endHour: data.endHour,
           zoneGroup,
           deliveryCount: 25,
           postcodes: [],
@@ -203,6 +207,8 @@ export function useDeliveryPlanning() {
           id: assignmentId,
           date,
           timeSlot,
+          startHour: data.startHour,
+          endHour: data.endHour,
           workers: [worker],
           deliveryCount: 0,
           postcodes: [],
@@ -229,9 +235,10 @@ export function useDeliveryPlanning() {
         variant: "destructive"
       });
     } else {
+      const hourRange = data.startHour && data.endHour ? ` ${data.startHour}:00-${data.endHour}:00` : ` ${timeSlot}:00`;
       toast({
         title: "Assignment created",
-        description: `Assignment created for ${format(date, 'EEE dd')} ${timeSlot}:00`,
+        description: `Assignment created for ${format(date, 'EEE dd')}${hourRange}`,
       });
     }
   }, [detectConflicts, toast]);

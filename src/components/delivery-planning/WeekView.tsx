@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { DeliveryAssignment } from '@/types/delivery-planning';
 import { ZoneAssignmentEditor } from './ZoneAssignmentEditor';
+import { AssignmentSummary } from './AssignmentSummary';
 
 interface WeekViewProps {
   onDrop: (e: React.DragEvent, date: Date, timeSlot: string) => void;
@@ -15,15 +16,17 @@ interface WeekViewProps {
   onTimeRangeSelect?: (date: Date, startHour: number, endHour: number) => void;
   dragSelection?: { date: Date; startHour: number; endHour: number } | null;
   setDragSelection?: React.Dispatch<React.SetStateAction<{ date: Date; startHour: number; endHour: number } | null>>;
+  onAssignmentSelect?: (assignment: DeliveryAssignment) => void;
 }
 
-export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect, dragSelection: externalDragSelection, setDragSelection: setExternalDragSelection }: WeekViewProps) {
+export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect, dragSelection: externalDragSelection, setDragSelection: setExternalDragSelection, onAssignmentSelect }: WeekViewProps) {
   const { weekDays, removeAssignment } = useDeliveryPlanning();
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ date: Date; hour: number } | null>(null);
   const [dragEnd, setDragEnd] = useState<{ date: Date; hour: number } | null>(null);
   const [internalDragSelection, setInternalDragSelection] = useState<{ date: Date; startHour: number; endHour: number } | null>(null);
   const [editingAssignment, setEditingAssignment] = useState<DeliveryAssignment | null>(null);
+  const [selectedAssignment, setSelectedAssignment] = useState<DeliveryAssignment | null>(null);
   
   // Use external drag selection if provided, otherwise use internal
   const dragSelection = externalDragSelection || internalDragSelection;
@@ -106,6 +109,28 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
     return hour >= dragSelection.startHour && hour < dragSelection.endHour;
   }, [dragSelection]);
 
+  // Get all multi-hour assignments that start at a specific hour
+  const getStretchedAssignments = useCallback((date: Date, hour: number) => {
+    const allAssignments = getAssignments(date, hour.toString());
+    return allAssignments.filter(assignment => 
+      assignment.startHour === hour && assignment.endHour && assignment.endHour > assignment.startHour
+    );
+  }, [getAssignments]);
+
+  // Check if a cell should be hidden because it's part of a stretched assignment
+  const isPartOfStretchedAssignment = useCallback((date: Date, hour: number) => {
+    // Look for assignments that start earlier but cover this hour
+    for (let startHour = 0; startHour < hour; startHour++) {
+      const assignments = getAssignments(date, startHour.toString());
+      for (const assignment of assignments) {
+        if (assignment.startHour === startHour && assignment.endHour && assignment.endHour > hour) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }, [getAssignments]);
+
   return (
     <div className="h-full bg-white rounded-lg" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       {/* Selection Display */}
@@ -176,9 +201,11 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
             >
               {timeSlots.map((slot) => {
                 const assignments = getAssignments(day, slot.id);
+                const stretchedAssignments = getStretchedAssignments(day, parseInt(slot.id));
                 const hour = parseInt(slot.id);
                 const inDragRange = isInDragRange(day, hour);
                 const inSelection = isInSelection(day, hour);
+                const isHidden = isPartOfStretchedAssignment(day, hour);
                 
                 return (
                   <div
@@ -193,13 +220,108 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                     onMouseDown={(e) => handleMouseDown(day, hour, e)}
                     onMouseEnter={() => handleMouseEnter(day, hour)}
                   >
-                    {assignments.length === 0 ? (
+                    {/* Show stretched assignments that start at this hour */}
+                    {stretchedAssignments.map((assignment) => {
+                      const conflictSeverity = getConflictSeverity(assignment);
+                      const hourSpan = (assignment.endHour || hour + 1) - hour;
+                      const heightCalc = `calc(${hourSpan * 100}% + ${(hourSpan - 1) * 1}px)`;
+                      
+                      return (
+                        <div 
+                          key={assignment.id} 
+                          className={`absolute inset-x-1 top-1 rounded-md px-1 md:px-2 py-1 group cursor-pointer shadow-sm border-l-2 md:border-l-4 z-10 ${
+                            conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
+                            conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
+                            conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
+                            'bg-blue-100 border-blue-500 text-blue-800'
+                          }`}
+                          style={{
+                            height: heightCalc,
+                            backgroundColor: assignment.zone?.color ? `${assignment.zone.color}20` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}20` : undefined,
+                            borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
+                          }}
+                          draggable
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedAssignment(assignment);
+                            onAssignmentSelect?.(assignment);
+                          }}
+                          onDragStart={(e) => {
+                            e.dataTransfer.setData('assignment', JSON.stringify(assignment));
+                          }}
+                        >
+                          <div className="font-medium truncate text-xs md:text-sm">
+                            {assignment.zone?.name || assignment.zoneGroup?.name}
+                          </div>
+                          <div className="text-xs opacity-75">
+                            {assignment.startHour}:00 - {assignment.endHour}:00
+                          </div>
+                          
+                          {/* Worker Info */}
+                          {assignment.workers && assignment.workers.length > 0 && (
+                            <div className="flex items-center justify-between mt-1">
+                              <div className="flex space-x-1">
+                                {assignment.workers.slice(0, 2).map((worker) => (
+                                  <span 
+                                    key={worker.id}
+                                    className="inline-flex items-center justify-center w-3 h-3 md:w-4 md:h-4 bg-white/50 rounded-full text-xs font-medium"
+                                  >
+                                    {worker.initials}
+                                  </span>
+                                ))}
+                                {assignment.workers.length > 2 && (
+                                  <span className="text-xs opacity-75">
+                                    +{assignment.workers.length - 2}
+                                  </span>
+                                )}
+                              </div>
+                              
+                               {/* Edit and Remove Buttons */}
+                               <div className="flex gap-1">
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-blue-200"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     setEditingAssignment(assignment);
+                                   }}
+                                 >
+                                   <Edit className="h-2 w-2 md:h-3 md:w-3 text-blue-600" />
+                                 </Button>
+                                 <Button
+                                   variant="ghost"
+                                   size="sm"
+                                   className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
+                                   onClick={(e) => {
+                                     e.stopPropagation();
+                                     removeAssignment(assignment.id);
+                                   }}
+                                 >
+                                   <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
+                                 </Button>
+                               </div>
+                            </div>
+                          )}
+
+                          {/* Conflict Indicator */}
+                          {conflictSeverity && (
+                            <div className="absolute -top-1 -right-1">
+                              {getConflictIcon(conflictSeverity)}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    
+                    {/* Show regular assignments (not stretched) if this cell is not hidden */}
+                    {!isHidden && assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).length === 0 ? (
                       <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                         <div className="text-xs text-gray-400">+</div>
                       </div>
-                    ) : (
+                    ) : !isHidden && (
                       <div className="space-y-1 h-full overflow-hidden">
-                        {assignments.map((assignment) => {
+                        {assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).map((assignment) => {
                           const conflictSeverity = getConflictSeverity(assignment);
                           
                           return (
@@ -216,6 +338,11 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                 borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
                               }}
                               draggable
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedAssignment(assignment);
+                                onAssignmentSelect?.(assignment);
+                              }}
                               onDragStart={(e) => {
                                 e.dataTransfer.setData('assignment', JSON.stringify(assignment));
                               }}
