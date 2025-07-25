@@ -70,8 +70,8 @@ const defaultWorkers: Worker[] = [
   { id: 'w6', name: 'Lisa Brown', initials: 'LB', skills: ['helper'] },
 ];
 
-// Updated time slots for 5 AM to 9 PM
-export const timeSlots: TimeSlot[] = Array.from({ length: 17 }, (_, i) => {
+// Updated time slots for 5 AM to 11 PM (23:00)
+export const timeSlots: TimeSlot[] = Array.from({ length: 19 }, (_, i) => {
   const hour = i + 5;
   return {
     id: `${hour}`,
@@ -375,6 +375,26 @@ export function useDeliveryPlanning() {
     );
   }, [state.assignments]);
 
+  // Get available zones (not currently assigned)
+  const getAvailableZones = useCallback(() => {
+    const assignedZoneIds = new Set(
+      state.assignments
+        .filter(a => a.zone)
+        .map(a => a.zone!.id)
+    );
+    return state.zones.filter(zone => !assignedZoneIds.has(zone.id));
+  }, [state.zones, state.assignments]);
+
+  // Get available zone groups (not currently assigned)
+  const getAvailableZoneGroups = useCallback(() => {
+    const assignedGroupIds = new Set(
+      state.assignments
+        .filter(a => a.zoneGroup)
+        .map(a => a.zoneGroup!.id)
+    );
+    return state.zoneGroups.filter(group => !assignedGroupIds.has(group.id));
+  }, [state.zoneGroups, state.assignments]);
+
   // Get filtered assignments
   const filteredAssignments = useMemo(() => {
     return state.assignments.filter(assignment => {
@@ -403,6 +423,8 @@ export function useDeliveryPlanning() {
     addNote,
     removeAssignment,
     getAssignments,
+    getAvailableZones,
+    getAvailableZoneGroups,
     filteredAssignments,
     detectConflicts,
   };

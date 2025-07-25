@@ -16,7 +16,7 @@ interface ZoneManagementProps {
 }
 
 export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
-  const { state, addZone, updateZone, removeZone, addOrderToZone, removeOrderFromZone } = useDeliveryPlanning();
+  const { state, addZone, updateZone, removeZone, addOrderToZone, removeOrderFromZone, getAvailableZones } = useDeliveryPlanning();
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
   const [showAddZone, setShowAddZone] = useState(false);
   const [showAddOrder, setShowAddOrder] = useState<string | null>(null);
@@ -38,7 +38,8 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
     notes: '',
   });
 
-  const filteredZones = state.zones.filter(zone =>
+  // Filter zones based on search and availability (zones not currently assigned)
+  const filteredZones = getAvailableZones().filter(zone =>
     zone.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     zone.postcodes.some(pc => pc.toLowerCase().includes(searchQuery.toLowerCase()))
   );

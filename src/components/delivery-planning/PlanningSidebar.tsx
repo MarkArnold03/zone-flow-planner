@@ -9,12 +9,29 @@ import { ToolsTab } from './ToolsTab';
 import { RouteVisualization } from './RouteVisualization';
 import { RouteOptimizer } from './RouteOptimizer';
 import { NotesAnnotations } from './NotesAnnotations';
+import { AssignmentSummary } from './AssignmentSummary';
+import { DeliveryAssignment } from '@/types/delivery-planning';
 
-export function PlanningSidebar() {
+interface PlanningSidebarProps {
+  selectedAssignment?: DeliveryAssignment | null;
+  onAssignmentClose?: () => void;
+}
+
+export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: PlanningSidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <div className="w-80 border-r bg-card shadow-lg flex flex-col animate-slide-in-right">
+      {/* Assignment Details Section - Top Priority */}
+      {selectedAssignment && (
+        <div className="border-b">
+          <AssignmentSummary
+            assignment={selectedAssignment}
+            onClose={onAssignmentClose || (() => {})}
+          />
+        </div>
+      )}
+
       {/* Sidebar Header */}
       <div className="p-4 border-b space-y-3">
         <div>

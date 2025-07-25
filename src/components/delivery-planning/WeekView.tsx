@@ -32,9 +32,9 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
   const dragSelection = externalDragSelection || internalDragSelection;
   const setDragSelection = setExternalDragSelection || setInternalDragSelection;
 
-  // Generate time slots from 12 AM to 11 PM (24-hour format like Outlook)
-  const timeSlots = Array.from({ length: 24 }, (_, i) => {
-    const hour = i;
+  // Generate time slots from 5 AM to 11 PM (24-hour format like Outlook)
+  const timeSlots = Array.from({ length: 19 }, (_, i) => {
+    const hour = i + 5;
     const displayHour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
     const ampm = hour >= 12 ? 'PM' : 'AM';
     
@@ -224,19 +224,21 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                     {stretchedAssignments.map((assignment) => {
                       const conflictSeverity = getConflictSeverity(assignment);
                       const hourSpan = (assignment.endHour || hour + 1) - hour;
-                      const heightCalc = `calc(${hourSpan * 100}% + ${(hourSpan - 1) * 1}px)`;
+                      const cellHeight = 48; // md:h-16 = 64px, h-12 = 48px on mobile
+                      const borderHeight = 1; // border-b
+                      const calculatedHeight = hourSpan * cellHeight + (hourSpan - 1) * borderHeight;
                       
                       return (
                         <div 
                           key={assignment.id} 
-                          className={`absolute inset-x-1 top-1 rounded-md px-1 md:px-2 py-1 group cursor-pointer shadow-sm border-l-2 md:border-l-4 z-10 ${
+                          className={`absolute left-1 right-1 top-1 rounded-md px-1 md:px-2 py-1 group cursor-pointer shadow-sm border-l-2 md:border-l-4 z-20 overflow-hidden ${
                             conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
                             conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
                             conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
                             'bg-blue-100 border-blue-500 text-blue-800'
                           }`}
                           style={{
-                            height: heightCalc,
+                            height: `${calculatedHeight}px`,
                             backgroundColor: assignment.zone?.color ? `${assignment.zone.color}20` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}20` : undefined,
                             borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
                           }}

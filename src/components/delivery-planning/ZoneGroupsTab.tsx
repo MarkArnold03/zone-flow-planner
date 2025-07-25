@@ -15,7 +15,7 @@ interface ZoneGroupsTabProps {
 }
 
 export function ZoneGroupsTab({ searchQuery }: ZoneGroupsTabProps) {
-  const { state, addZoneGroup } = useDeliveryPlanning();
+  const { state, addZoneGroup, getAvailableZoneGroups } = useDeliveryPlanning();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newGroup, setNewGroup] = useState({
     name: '',
@@ -24,12 +24,11 @@ export function ZoneGroupsTab({ searchQuery }: ZoneGroupsTabProps) {
     description: ''
   });
 
-  const filteredGroups = state.zoneGroups.filter(group =>
+  const filteredGroups = getAvailableZoneGroups().filter(group =>
     group.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    group.zones.some(zoneId => {
-      const zone = state.zones.find(z => z.id === zoneId);
-      return zone?.name.toLowerCase().includes(searchQuery.toLowerCase());
-    })
+    group.zones.some(zoneId => 
+      state.zones.find(z => z.id === zoneId)?.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
 
   const handleDragStart = (e: React.DragEvent, group: ZoneGroup) => {

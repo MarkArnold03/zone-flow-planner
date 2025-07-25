@@ -13,7 +13,12 @@ import { AssignmentSummary } from './AssignmentSummary';
 import { useToast } from '@/hooks/use-toast';
 import { DeliveryAssignment } from '@/types/delivery-planning';
 
-export function PlanningCalendar() {
+interface PlanningCalendarProps {
+  selectedAssignment?: DeliveryAssignment | null;
+  onAssignmentSelect?: (assignment: DeliveryAssignment | null) => void;
+}
+
+export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: PlanningCalendarProps) {
   const {
     state,
     updateViewMode,
@@ -24,7 +29,6 @@ export function PlanningCalendar() {
 
   const [showCarousel, setShowCarousel] = useState(false);
   const [dragSelection, setDragSelection] = useState<{ date: Date; startHour: number; endHour: number } | null>(null);
-  const [selectedAssignment, setSelectedAssignment] = useState<DeliveryAssignment | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -86,107 +90,96 @@ export function PlanningCalendar() {
   }, [toast]);
 
   return (
-    <div className="flex gap-6 flex-1 p-6 animate-fade-in">
-      {/* Main Calendar Area */}
-      <div className="flex-1 space-y-6">
-        <PlanningHeader />
+    <div className="flex-1 space-y-6 p-6 animate-fade-in">
+      <PlanningHeader />
+      
+      {/* View Toggle */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <Button
+            variant={state.viewMode === 'week' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              updateViewMode('week');
+              setShowCarousel(false);
+            }}
+          >
+            <CalendarIcon className="h-4 w-4 mr-2" />
+            Week View
+          </Button>
+          <Button
+            variant={state.viewMode === 'month' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => {
+              updateViewMode('month');
+              setShowCarousel(false);
+            }}
+          >
+            <CalendarIcon className="h-4 w-4 mr-2" />
+            Month View
+          </Button>
+          <Button
+            variant={showCarousel ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowCarousel(!showCarousel)}
+          >
+            <Clock className="h-4 w-4 mr-2" />
+            Time Carousel
+          </Button>
+        </div>
         
-        {/* View Toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={state.viewMode === 'week' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                updateViewMode('week');
-                setShowCarousel(false);
-              }}
-            >
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              Week View
-            </Button>
-            <Button
-              variant={state.viewMode === 'month' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => {
-                updateViewMode('month');
-                setShowCarousel(false);
-              }}
-            >
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              Month View
-            </Button>
-            <Button
-              variant={showCarousel ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setShowCarousel(!showCarousel)}
-            >
-              <Clock className="h-4 w-4 mr-2" />
-              Time Carousel
-            </Button>
+        {/* Summary Stats */}
+        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+          <div className="flex items-center space-x-1">
+            <Users className="h-4 w-4" />
+            <span>{state.workers.length} workers available</span>
           </div>
-          
-          {/* Summary Stats */}
-          <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-            <div className="flex items-center space-x-1">
-              <Users className="h-4 w-4" />
-              <span>{state.workers.length} workers available</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <MapPin className="h-4 w-4" />
-              <span>{state.zones.length} zones</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Clock className="h-4 w-4" />
-              <span>{state.assignments.length} assignments</span>
-            </div>
+          <div className="flex items-center space-x-1">
+            <MapPin className="h-4 w-4" />
+            <span>{state.zones.length} zones</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <Clock className="h-4 w-4" />
+            <span>{state.assignments.length} assignments</span>
           </div>
         </div>
-
-        {/* Calendar View */}
-        <Card className="overflow-hidden shadow-sm border border-gray-200">
-          {showCarousel ? (
-            <div className="p-6">
-              <TimeSlotCarousel
-                selectedDate={state.currentDate}
-                onDrop={onDrop}
-                onDragOver={handleDragOver}
-                getAssignments={getAssignments}
-              />
-            </div>
-          ) : state.viewMode === 'week' ? (
-            <div className="h-[500px] md:h-[700px]">
-              <WeekView
-                onDrop={onDrop}
-                onDragOver={handleDragOver}
-                getAssignments={getAssignments}
-                onTimeRangeSelect={handleTimeRangeSelect}
-                dragSelection={dragSelection}
-                setDragSelection={setDragSelection}
-                onAssignmentSelect={setSelectedAssignment}
-              />
-            </div>
-          ) : (
-            <div className="p-6">
-              <MonthView
-                onDrop={onDrop}
-                onDragOver={handleDragOver}
-                getAssignments={getAssignments}
-              />
-            </div>
-          )}
-        </Card>
       </div>
 
-      {/* Assignment Summary Sidebar */}
-      {selectedAssignment && (
-        <div className="w-80 space-y-4">
-          <AssignmentSummary
-            assignment={selectedAssignment}
-            onClose={() => setSelectedAssignment(null)}
-          />
-        </div>
-      )}
+      {/* Calendar View */}
+      <Card className="overflow-hidden shadow-sm border border-gray-200">
+        {showCarousel ? (
+          <div className="p-6">
+            <TimeSlotCarousel
+              selectedDate={state.currentDate}
+              onDrop={onDrop}
+              onDragOver={handleDragOver}
+              getAssignments={getAssignments}
+            />
+          </div>
+        ) : state.viewMode === 'week' ? (
+          <div className="h-[600px] md:h-[800px]">
+            <WeekView
+              onDrop={onDrop}
+              onDragOver={handleDragOver}
+              getAssignments={getAssignments}
+              onTimeRangeSelect={handleTimeRangeSelect}
+              dragSelection={dragSelection}
+              setDragSelection={setDragSelection}
+                onAssignmentSelect={(assignment) => {
+                  onAssignmentSelect?.(assignment);
+                }}
+              />
+            </div>
+        ) : (
+          <div className="p-6">
+            <MonthView
+              onDrop={onDrop}
+              onDragOver={handleDragOver}
+              getAssignments={getAssignments}
+            />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
