@@ -46,16 +46,19 @@ All colors MUST be HSL.
     --mobility-light: 210 40% 98%;
     --mobility-accent: 220 9% 46%;
     
-    /* Simple Professional Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--background)));
-    --gradient-sidebar: linear-gradient(180deg, hsl(var(--card)), hsl(var(--background)));
-    --gradient-header: linear-gradient(90deg, hsl(var(--background)), hsl(var(--card)));
+    /* Professional Gradients using semantic tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-foreground)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--muted)));
+    --gradient-sidebar: linear-gradient(180deg, hsl(var(--sidebar)), hsl(var(--sidebar-accent)));
+    --gradient-header: linear-gradient(90deg, hsl(var(--background)), hsl(var(--muted)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--accent-foreground)));
     
-    /* Professional Shadows */
+    /* Professional Shadows with design tokens */
     --shadow-soft: 0 1px 3px 0 hsl(var(--foreground) / 0.1), 0 1px 2px 0 hsl(var(--foreground) / 0.06);
     --shadow-medium: 0 4px 6px -1px hsl(var(--foreground) / 0.1), 0 2px 4px -1px hsl(var(--foreground) / 0.06);
     --shadow-heavy: 0 10px 15px -3px hsl(var(--foreground) / 0.1), 0 4px 6px -2px hsl(var(--foreground) / 0.05);
+    --shadow-glow: 0 0 20px 0 hsl(var(--primary) / 0.3);
+    --shadow-float: 0 8px 16px -4px hsl(var(--foreground) / 0.1), 0 6px 16px -4px hsl(var(--foreground) / 0.05);
     
     /* Refined Transitions */
     --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -162,6 +165,8 @@ All colors MUST be HSL.
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-medium { box-shadow: var(--shadow-medium); }
   .shadow-heavy { box-shadow: var(--shadow-heavy); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-float { box-shadow: var(--shadow-float); }
   
   /* Responsive text */
   .text-responsive-lg { @apply text-lg sm:text-xl lg:text-2xl; }

@@ -125,10 +125,10 @@ export function ZoneGroupsTab({ searchQuery }: ZoneGroupsTabProps) {
                         htmlFor={`zone-${zone.id}`}
                         className="text-sm flex items-center space-x-2 cursor-pointer"
                       >
-                        <div 
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: zone.color }}
-                        />
+                         <div 
+                           className="w-3 h-3 rounded-full border border-border/20"
+                           style={{ backgroundColor: zone.color }}
+                         />
                         <span>{zone.name}</span>
                       </label>
                     </div>

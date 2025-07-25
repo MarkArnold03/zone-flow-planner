@@ -45,11 +45,11 @@ export const CalendarSlotNode = memo(({ data }: CalendarSlotNodeProps) => {
             
             {assignedZone ? (
               <div className="mt-2">
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs"
-                  style={{ backgroundColor: zoneColor, color: 'white' }}
-                >
+              <Badge 
+                variant="secondary" 
+                className="text-xs text-primary-foreground"
+                style={{ backgroundColor: zoneColor }}
+              >
                   {assignedZone}
                 </Badge>
               </div>

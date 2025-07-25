@@ -104,10 +104,10 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                             onDragStart={(e) => handleDragStart(e, assignment)}
                           >
                             {assignment.zone && (
-                              <div
-                                className="p-1 rounded text-xs text-primary-foreground font-medium cursor-move flex items-center justify-between"
-                                style={{ backgroundColor: assignment.zone.color }}
-                              >
+                               <div
+                                 className="p-1 rounded text-xs text-primary-foreground font-medium cursor-move flex items-center justify-between border border-white/20"
+                                 style={{ backgroundColor: assignment.zone.color }}
+                               >
                                 <span className="truncate flex-1">
                                   {assignment.zone.name}
                                 </span>
@@ -123,10 +123,10 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                             )}
                             
                             {assignment.zoneGroup && (
-                              <div
-                                className="p-1 rounded text-xs text-primary-foreground font-medium cursor-move flex items-center justify-between"
-                                style={{ backgroundColor: assignment.zoneGroup.color }}
-                              >
+                               <div
+                                 className="p-1 rounded text-xs text-primary-foreground font-medium cursor-move flex items-center justify-between border border-white/20"
+                                 style={{ backgroundColor: assignment.zoneGroup.color }}
+                               >
                                 <span className="truncate flex-1">
                                   {assignment.zoneGroup.name}
                                 </span>
