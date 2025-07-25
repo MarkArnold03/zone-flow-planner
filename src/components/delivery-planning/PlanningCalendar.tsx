@@ -103,26 +103,32 @@ export function PlanningCalendar() {
       </div>
 
       {/* Calendar View */}
-      <Card className="p-6 hover:shadow-lg transition-shadow duration-200">
+      <Card className="overflow-hidden shadow-sm border border-gray-200">
         {showCarousel ? (
-          <TimeSlotCarousel
-            selectedDate={state.currentDate}
-            onDrop={onDrop}
-            onDragOver={handleDragOver}
-            getAssignments={getAssignments}
-          />
+          <div className="p-6">
+            <TimeSlotCarousel
+              selectedDate={state.currentDate}
+              onDrop={onDrop}
+              onDragOver={handleDragOver}
+              getAssignments={getAssignments}
+            />
+          </div>
         ) : state.viewMode === 'week' ? (
-          <WeekView
-            onDrop={onDrop}
-            onDragOver={handleDragOver}
-            getAssignments={getAssignments}
-          />
+          <div className="h-[700px]">
+            <WeekView
+              onDrop={onDrop}
+              onDragOver={handleDragOver}
+              getAssignments={getAssignments}
+            />
+          </div>
         ) : (
-          <MonthView
-            onDrop={onDrop}
-            onDragOver={handleDragOver}
-            getAssignments={getAssignments}
-          />
+          <div className="p-6">
+            <MonthView
+              onDrop={onDrop}
+              onDragOver={handleDragOver}
+              getAssignments={getAssignments}
+            />
+          </div>
         )}
       </Card>
     </div>
