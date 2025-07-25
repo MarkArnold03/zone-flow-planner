@@ -1,5 +1,6 @@
 import React from 'react';
 import { format, addWeeks, subWeeks, addMonths, subMonths } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, MapPin, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -35,16 +36,16 @@ export function PlanningHeader({ selectedTimeRange }: PlanningHeaderProps) {
 
   const getHeaderText = () => {
     if (state.viewMode === 'week') {
-      return `Week ${format(state.currentDate, 'w, yyyy')}`;
+      return `Vecka ${format(state.currentDate, 'w, yyyy')}`;
     }
-    return format(state.currentDate, 'MMMM yyyy');
+    return format(state.currentDate, 'MMMM yyyy', { locale: sv });
   };
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border-b border-border bg-card">
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <h1 className="text-responsive-lg font-bold text-foreground">
-          Future Mobility Delivery Planning
+          Future Mobility Leveransplanering
         </h1>
         <div className="flex items-center gap-1 sm:gap-2">
           <Button variant="outline" size="sm" onClick={goToPrevious}>
@@ -54,7 +55,7 @@ export function PlanningHeader({ selectedTimeRange }: PlanningHeaderProps) {
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button variant="default" size="sm" onClick={goToToday}>
-            Today
+            Idag
           </Button>
         </div>
       </div>
@@ -80,13 +81,13 @@ export function PlanningHeader({ selectedTimeRange }: PlanningHeaderProps) {
             className="flex-shrink-0"
           >
             <MapPin className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Route Map</span>
+            <span className="hidden sm:inline">Ruttkarta</span>
           </Button>
           <ExportTools />
           <SettingsDialog>
             <Button variant="outline" size="sm" className="flex-shrink-0">
               <Settings className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Settings</span>
+              <span className="hidden sm:inline">Inställningar</span>
             </Button>
           </SettingsDialog>
         </div>

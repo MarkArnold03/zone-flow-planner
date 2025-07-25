@@ -70,13 +70,13 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
       }`}>
         <div>
           <h2 className="text-lg font-bold text-foreground">
-            Delivery Control Panel
+            Leverans Kontrollpanel
           </h2>
           <p className="text-xs text-muted-foreground">
-            Drag zones to calendar to assign • Drop assignments here to remove
+            Dra zoner till kalender för att tilldela • Släpp uppdrag här för att ta bort
             {isDragOver && (
               <span className="block text-destructive font-medium mt-1">
-                🗑️ Drop assignment here to remove
+                🗑️ Släpp uppdrag här för att ta bort
               </span>
             )}
           </p>
@@ -86,7 +86,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search postcodes, zones, trucks..."
+            placeholder="Sök postnummer, zoner, fordon..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -99,19 +99,19 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
         <TabsList className="grid w-full grid-cols-4 mx-4 mt-4">
           <TabsTrigger value="zones" className="text-xs">
             <MapPin className="h-3 w-3 mr-1" />
-            Zones
+            Zoner
           </TabsTrigger>
           <TabsTrigger value="groups" className="text-xs">
             <Package className="h-3 w-3 mr-1" />
-            Groups
+            Grupper
           </TabsTrigger>
           <TabsTrigger value="routes" className="text-xs">
             <Route className="h-3 w-3 mr-1" />
-            Routes
+            Rutter
           </TabsTrigger>
           <TabsTrigger value="tools" className="text-xs">
             <Settings className="h-3 w-3 mr-1" />
-            Tools
+            Verktyg
           </TabsTrigger>
         </TabsList>
 

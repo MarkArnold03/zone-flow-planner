@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { format, isToday, isSameDay } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trash2, AlertTriangle, CheckCircle, X, Edit } from 'lucide-react';
@@ -32,18 +33,19 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
   const dragSelection = externalDragSelection || internalDragSelection;
   const setDragSelection = setExternalDragSelection || setInternalDragSelection;
 
-  // Generate time slots from 5 AM to 11 PM (24-hour format like Outlook)
-  const timeSlots = Array.from({ length: 19 }, (_, i) => {
+  // Generate time slots from 5 AM to 12 AM (midnight)
+  const timeSlots = Array.from({ length: 20 }, (_, i) => {
     const hour = i + 5;
-    const displayHour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const actualHour = hour > 23 ? hour - 24 : hour;
+    const displayHour12 = actualHour === 0 ? 12 : actualHour > 12 ? actualHour - 12 : actualHour;
+    const ampm = actualHour >= 12 ? 'EM' : 'FM';
     
     return {
-      id: `${hour}`,
-      start: `${hour.toString().padStart(2, '0')}:00`,
-      end: `${(hour + 1).toString().padStart(2, '0')}:00`,
+      id: `${actualHour}`,
+      start: `${actualHour.toString().padStart(2, '0')}:00`,
+      end: `${((actualHour + 1) % 24).toString().padStart(2, '0')}:00`,
       label: `${displayHour12} ${ampm}`,
-      hour,
+      hour: actualHour,
       ampm
     };
   });
@@ -150,10 +152,15 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
     <div className="h-full bg-card flex flex-col shadow-soft relative z-10" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       {/* Selection Display */}
       {dragSelection && (
-        <div className="p-2 border-b border-border flex items-center justify-between flex-shrink-0 bg-primary/5">
-          <span className="text-sm text-primary font-medium">
-            Selected: {format(dragSelection.date, 'EEE dd')} {dragSelection.startHour}:00 - {dragSelection.endHour}:00
-          </span>
+        <div className="p-3 border-b border-border flex items-center justify-between flex-shrink-0 bg-primary/5">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-primary font-medium">
+              Valt: {format(dragSelection.date, 'EEE dd', { locale: sv })} {dragSelection.startHour}:00 - {dragSelection.endHour}:00
+            </span>
+            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/50 rounded">
+              Dra en zon från sidopanelen för att tilldela till denna tid
+            </span>
+          </div>
           <Button variant="ghost" size="sm" onClick={clearSelection}>
             <X className="h-4 w-4" />
           </Button>
@@ -163,7 +170,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
       {/* Fixed Days Column */}
       <div className="flex border-b border-border bg-muted/30 flex-shrink-0">
         <div className="w-32 p-4 border-r border-border flex-shrink-0">
-          <div className="text-sm font-medium text-muted-foreground">Days</div>
+          <div className="text-sm font-medium text-muted-foreground">Dagar</div>
         </div>
         
         {/* Horizontal Time Header - Single scrollable area */}
@@ -196,13 +203,13 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
             {/* Fixed Date column */}
             <div className={`w-32 p-4 border-r border-border flex-shrink-0 flex flex-col justify-center transition-all duration-200 ${getTodayClasses(day) || 'bg-muted/20'}`}>
               <div className={`text-sm font-medium transition-colors duration-200 ${isToday(day) ? 'text-today-time' : 'text-muted-foreground'}`}>
-                {format(day, 'EEEE')}
+                {format(day, 'EEEE', { locale: sv })}
               </div>
               <div className={`text-xl font-semibold transition-all duration-200 ${isToday(day) ? 'text-today-time' : 'text-primary'}`}>
                 {format(day, 'd')}
               </div>
               <div className={`text-xs transition-colors duration-200 ${isToday(day) ? 'text-today-time/80' : 'text-muted-foreground'}`}>
-                {format(day, 'MMM yyyy')}
+                {format(day, 'MMM yyyy', { locale: sv })}
               </div>
             </div>
 

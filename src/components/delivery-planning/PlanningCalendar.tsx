@@ -8,7 +8,7 @@ import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { WeekView } from './WeekView';
 import { MonthView } from './MonthView';
 import { PlanningHeader } from './PlanningHeader';
-import { TimeSlotCarousel } from './TimeSlotCarousel';
+
 import { AssignmentSummary } from './AssignmentSummary';
 import { useToast } from '@/hooks/use-toast';
 import { DeliveryAssignment } from '@/types/delivery-planning';
@@ -81,8 +81,8 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
   const handleTimeRangeSelect = useCallback((date: Date, startHour: number, endHour: number) => {
     setDragSelection({ date, startHour, endHour });
     toast({
-      title: "Time range selected",
-      description: `Selected ${date.toLocaleDateString()} from ${startHour}:00 to ${endHour}:00. Drag a zone from the sidebar to assign it.`,
+      title: "Tidsintervall valt",
+      description: `Valt ${date.toLocaleDateString('sv-SE')} från ${startHour}:00 till ${endHour}:00. Dra en zon från sidopanelen för att tilldela den.`,
     });
   }, [toast]);
 
@@ -102,7 +102,7 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
             }}
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
-            Week View
+            Veckovy
           </Button>
           <Button
             variant={state.viewMode === 'month' ? 'default' : 'outline'}
@@ -113,15 +113,7 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
             }}
           >
             <CalendarIcon className="h-4 w-4 mr-2" />
-            Month View
-          </Button>
-          <Button
-            variant={showCarousel ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setShowCarousel(!showCarousel)}
-          >
-            <Clock className="h-4 w-4 mr-2" />
-            Time Carousel
+            Månadsvy
           </Button>
         </div>
         
@@ -129,27 +121,18 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
           <div className="flex items-center space-x-1">
             <MapPin className="h-4 w-4" />
-            <span>{state.zones.length} zones</span>
+            <span>{state.zones.length} zoner</span>
           </div>
           <div className="flex items-center space-x-1">
             <Clock className="h-4 w-4" />
-            <span>{state.assignments.length} assignments</span>
+            <span>{state.assignments.length} uppdrag</span>
           </div>
         </div>
       </div>
 
       {/* Calendar View */}
       <Card className="flex-1 flex flex-col shadow-soft border border-border bg-gradient-to-br from-card to-card/50 overflow-hidden">
-        {showCarousel ? (
-          <div className="p-3 sm:p-4 lg:p-6 overflow-y-auto">
-            <TimeSlotCarousel
-              selectedDate={state.currentDate}
-              onDrop={onDrop}
-              onDragOver={handleDragOver}
-              getAssignments={getAssignments}
-            />
-          </div>
-        ) : state.viewMode === 'week' ? (
+        {state.viewMode === 'week' ? (
           <WeekView
             onDrop={onDrop}
             onDragOver={handleDragOver}
