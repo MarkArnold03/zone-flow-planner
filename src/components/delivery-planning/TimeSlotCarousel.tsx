@@ -22,12 +22,17 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
   // Generate time slots from 5 AM to 9 PM (5-21)
   const timeSlots = Array.from({ length: 17 }, (_, i) => {
     const hour = i + 5;
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    
     return {
       id: `${hour}`,
       start: `${hour.toString().padStart(2, '0')}:00`,
       end: `${(hour + 1).toString().padStart(2, '0')}:00`,
-      label: `${hour.toString().padStart(2, '0')}:00`,
-      hour
+      label: `${displayHour12}:00`,
+      hour,
+      ampm
     };
   });
 
@@ -80,7 +85,7 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                         {slot.label}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {slot.hour < 12 ? 'AM' : 'PM'}
+                        {slot.ampm}
                       </div>
                     </div>
 
