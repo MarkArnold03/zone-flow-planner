@@ -57,25 +57,25 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
   };
 
   return (
-    <div className={`w-72 sm:w-80 lg:w-96 border-r border-border/50 bg-gradient-sidebar shadow-heavy flex flex-col transition-all duration-300 relative z-10 glass-heavy h-full overflow-hidden ${
-      isDragOver ? 'bg-muted/50 border-primary/30 shadow-glow' : ''
+    <div className={`w-72 sm:w-80 lg:w-96 border-r border-border bg-card shadow-soft flex flex-col transition-all duration-200 relative z-10 h-full overflow-hidden ${
+      isDragOver ? 'bg-muted border-destructive/30' : ''
     }`}
          onDrop={handleDrop}
          onDragOver={handleDragOver}
          onDragLeave={handleDragLeave}
     >
-      {/* Sidebar Header - Removal zone */}
-      <div className={`p-3 sm:p-4 border-b border-border/50 space-y-3 transition-all duration-300 backdrop-blur-sm ${
-        isDragOver ? 'bg-destructive/10 border-destructive/30 shadow-inner animate-glow' : 'bg-gradient-header'
+      {/* Sidebar Header */}
+      <div className={`p-3 sm:p-4 border-b border-border space-y-3 transition-all duration-200 ${
+        isDragOver ? 'bg-destructive/10 border-destructive/30' : 'bg-card'
       }`}>
-        <div className="animate-slide-up">
-          <h2 className="text-lg font-bold text-foreground bg-gradient-primary bg-clip-text text-transparent">
+        <div>
+          <h2 className="text-lg font-bold text-foreground">
             Delivery Control Panel
           </h2>
           <p className="text-xs text-muted-foreground">
             Drag zones to calendar to assign • Drop assignments here to remove
             {isDragOver && (
-              <span className="block text-destructive font-medium mt-1 animate-bounce-in">
+              <span className="block text-destructive font-medium mt-1">
                 🗑️ Drop assignment here to remove
               </span>
             )}
@@ -83,33 +83,33 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
         </div>
         
         {/* Global Search */}
-        <div className="relative animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-200 peer-focus:text-primary" />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search postcodes, zones, trucks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 glass border-border/30 focus:border-primary/50 focus:shadow-glow transition-all duration-300 peer"
+            className="pl-10"
           />
         </div>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="zones" className="flex-1 flex flex-col animate-slide-up" style={{ animationDelay: '0.2s' }}>
-        <TabsList className="grid w-full grid-cols-4 mx-4 mt-4 glass border-border/30 shadow-soft">
-          <TabsTrigger value="zones" className="text-xs hover-scale transition-all duration-200 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-medium">
+      <Tabs defaultValue="zones" className="flex-1 flex flex-col">
+        <TabsList className="grid w-full grid-cols-4 mx-4 mt-4">
+          <TabsTrigger value="zones" className="text-xs">
             <MapPin className="h-3 w-3 mr-1" />
             Zones
           </TabsTrigger>
-          <TabsTrigger value="groups" className="text-xs hover-scale transition-all duration-200 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-medium">
+          <TabsTrigger value="groups" className="text-xs">
             <Package className="h-3 w-3 mr-1" />
             Groups
           </TabsTrigger>
-          <TabsTrigger value="routes" className="text-xs hover-scale transition-all duration-200 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-medium">
+          <TabsTrigger value="routes" className="text-xs">
             <Route className="h-3 w-3 mr-1" />
             Routes
           </TabsTrigger>
-          <TabsTrigger value="tools" className="text-xs hover-scale transition-all duration-200 data-[state=active]:bg-gradient-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-medium">
+          <TabsTrigger value="tools" className="text-xs">
             <Settings className="h-3 w-3 mr-1" />
             Tools
           </TabsTrigger>

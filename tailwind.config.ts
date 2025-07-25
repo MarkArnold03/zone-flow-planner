@@ -60,10 +60,10 @@ export default {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))'
 				},
-				nordic: {
-					blue: 'hsl(var(--nordic-blue))',
-					light: 'hsl(var(--nordic-light))',
-					accent: 'hsl(var(--nordic-accent))'
+				mobility: {
+					blue: 'hsl(var(--mobility-blue))',
+					light: 'hsl(var(--mobility-light))',
+					accent: 'hsl(var(--mobility-accent))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
