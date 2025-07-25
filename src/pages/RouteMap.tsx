@@ -22,11 +22,32 @@ export default function RouteMap() {
   const [selectedWorker, setSelectedWorker] = useState<string>('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
 
-  // Filter assignments based on selections
+  // Get selected time range from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedTimeRangeDate = urlParams.get('date');
+  const startHour = urlParams.get('startHour');
+  const endHour = urlParams.get('endHour');
+  
+  // Use URL params if available, otherwise use the filters
+  React.useEffect(() => {
+    if (selectedTimeRangeDate) {
+      setSelectedDate(selectedTimeRangeDate);
+    }
+  }, [selectedTimeRangeDate]);
+  
+  // Filter assignments based on selections and selected time range
   const filteredAssignments = state.assignments.filter(assignment => {
     const matchesDate = format(assignment.date, 'yyyy-MM-dd') === selectedDate;
     const matchesWorker = !selectedWorker;
     const matchesTimeSlot = !selectedTimeSlot || assignment.timeSlot === selectedTimeSlot;
+    
+    // If we have a selected time range from URL, filter by that
+    if (startHour && endHour) {
+      const assignmentHour = assignment.startHour || parseInt(assignment.timeSlot.split(':')[0]);
+      const matchesTimeRange = assignmentHour >= parseInt(startHour) && assignmentHour < parseInt(endHour);
+      return matchesDate && matchesWorker && matchesTimeRange;
+    }
+    
     return matchesDate && matchesWorker && matchesTimeSlot;
   });
 
@@ -174,6 +195,11 @@ export default function RouteMap() {
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <MapPin className="h-6 w-6" />
               Route Visualization
+              {startHour && endHour && (
+                <Badge variant="secondary" className="ml-2">
+                  {startHour}:00 - {endHour}:00
+                </Badge>
+              )}
             </h1>
           </div>
         </div>

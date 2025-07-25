@@ -88,7 +88,7 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
 
   return (
     <div className="flex-1 flex flex-col p-2 sm:p-4 lg:p-6 animate-fade-in overflow-hidden h-full">
-      <PlanningHeader />
+      <PlanningHeader selectedTimeRange={dragSelection} />
       
       {/* View Toggle */}
       <div className="flex items-center justify-between mb-4">

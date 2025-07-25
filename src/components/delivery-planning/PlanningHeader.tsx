@@ -7,7 +7,11 @@ import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { ExportTools } from './ExportTools';
 import { SettingsDialog } from './SettingsDialog';
 
-export function PlanningHeader() {
+interface PlanningHeaderProps {
+  selectedTimeRange?: { date: Date; startHour: number; endHour: number } | null;
+}
+
+export function PlanningHeader({ selectedTimeRange }: PlanningHeaderProps) {
   const { state, updateDate } = useDeliveryPlanning();
   const navigate = useNavigate();
 
@@ -61,7 +65,20 @@ export function PlanningHeader() {
         </h2>
         
         <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={() => navigate('/route-map')} className="flex-shrink-0">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              const params = new URLSearchParams();
+              if (selectedTimeRange) {
+                params.set('date', format(selectedTimeRange.date, 'yyyy-MM-dd'));
+                params.set('startHour', selectedTimeRange.startHour.toString());
+                params.set('endHour', selectedTimeRange.endHour.toString());
+              }
+              navigate(`/route-map?${params.toString()}`);
+            }} 
+            className="flex-shrink-0"
+          >
             <MapPin className="h-4 w-4 sm:mr-2" />
             <span className="hidden sm:inline">Route Map</span>
           </Button>
