@@ -11,6 +11,7 @@ import { RouteOptimizer } from './RouteOptimizer';
 import { NotesAnnotations } from './NotesAnnotations';
 import { AssignmentSummary } from './AssignmentSummary';
 import { DeliveryAssignment } from '@/types/delivery-planning';
+import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 
 interface PlanningSidebarProps {
   selectedAssignment?: DeliveryAssignment | null;
@@ -18,10 +19,40 @@ interface PlanningSidebarProps {
 }
 
 export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: PlanningSidebarProps) {
+  const { removeAssignment } = useDeliveryPlanning();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const assignmentData = e.dataTransfer.getData('assignment');
+    
+    if (assignmentData) {
+      const assignment = JSON.parse(assignmentData);
+      // Remove the assignment when dropped back to sidebar
+      removeAssignment(assignment.id);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
 
   return (
-    <div className="w-80 border-r bg-card shadow-lg flex flex-col animate-slide-in-right">
+    <div className={`w-80 border-r bg-card shadow-lg flex flex-col animate-slide-in-right transition-colors ${
+      isDragOver ? 'bg-blue-50 border-blue-300' : ''
+    }`}
+         onDrop={handleDrop}
+         onDragOver={handleDragOver}
+         onDragLeave={handleDragLeave}
+    >
       {/* Assignment Details Section - Top Priority */}
       {selectedAssignment && (
         <div className="border-b">
@@ -39,7 +70,12 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
             Delivery Control Panel
           </h2>
           <p className="text-xs text-muted-foreground">
-            Drag & drop to assign zones, trucks, and routes
+            Drag & drop to assign zones • Drop assignments here to remove
+            {isDragOver && (
+              <span className="block text-blue-600 font-medium mt-1">
+                🎯 Drop here to remove assignment
+              </span>
+            )}
           </p>
         </div>
         

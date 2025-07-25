@@ -166,6 +166,23 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
 
       {/* Zone Cards */}
       <div className="space-y-3">
+        {displayedZones.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+            <p className="text-sm">
+              {searchQuery 
+                ? 'No zones match your search' 
+                : 'All zones are currently assigned'
+              }
+            </p>
+            {!searchQuery && (
+              <p className="text-xs mt-1">
+                Drag assignments back here to make zones available
+              </p>
+            )}
+          </div>
+        ) : (
+          <>
         {displayedZones.map((zone) => {
           const zoneOrders = getZoneOrders(zone);
           
@@ -398,6 +415,8 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
               {showAllZones ? 'Show Less' : `Show More (${filteredZones.length - 4} more)`}
             </Button>
           </div>
+        )}
+          </>
         )}
       </div>
 

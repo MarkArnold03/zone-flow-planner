@@ -224,14 +224,14 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                     {stretchedAssignments.map((assignment) => {
                       const conflictSeverity = getConflictSeverity(assignment);
                       const hourSpan = (assignment.endHour || hour + 1) - hour;
-                      const cellHeight = 48; // md:h-16 = 64px, h-12 = 48px on mobile
+                      const cellHeight = window.innerWidth >= 768 ? 64 : 48; // md:h-16 = 64px, h-12 = 48px
                       const borderHeight = 1; // border-b
-                      const calculatedHeight = hourSpan * cellHeight + (hourSpan - 1) * borderHeight;
+                      const calculatedHeight = hourSpan * cellHeight + (hourSpan - 1) * borderHeight - 8; // -8 for padding
                       
                       return (
                         <div 
                           key={assignment.id} 
-                          className={`absolute left-1 right-1 top-1 rounded-md px-1 md:px-2 py-1 group cursor-pointer shadow-sm border-l-2 md:border-l-4 z-20 overflow-hidden ${
+                          className={`absolute left-1 right-1 top-1 bottom-1 rounded-md px-2 py-1 group cursor-pointer shadow-sm border-l-4 z-20 overflow-hidden flex flex-col ${
                             conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
                             conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
                             conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
@@ -239,7 +239,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                           }`}
                           style={{
                             height: `${calculatedHeight}px`,
-                            backgroundColor: assignment.zone?.color ? `${assignment.zone.color}20` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}20` : undefined,
+                            backgroundColor: assignment.zone?.color ? `${assignment.zone.color}30` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}30` : undefined,
                             borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
                           }}
                           draggable
@@ -252,59 +252,61 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                             e.dataTransfer.setData('assignment', JSON.stringify(assignment));
                           }}
                         >
-                          <div className="font-medium truncate text-xs md:text-sm">
+                          <div className="font-medium truncate text-sm">
                             {assignment.zone?.name || assignment.zoneGroup?.name}
                           </div>
-                          <div className="text-xs opacity-75">
+                          <div className="text-xs opacity-75 mb-1">
                             {assignment.startHour}:00 - {assignment.endHour}:00
                           </div>
                           
                           {/* Worker Info */}
-                          {assignment.workers && assignment.workers.length > 0 && (
-                            <div className="flex items-center justify-between mt-1">
-                              <div className="flex space-x-1">
-                                {assignment.workers.slice(0, 2).map((worker) => (
-                                  <span 
-                                    key={worker.id}
-                                    className="inline-flex items-center justify-center w-3 h-3 md:w-4 md:h-4 bg-white/50 rounded-full text-xs font-medium"
-                                  >
-                                    {worker.initials}
-                                  </span>
-                                ))}
-                                {assignment.workers.length > 2 && (
-                                  <span className="text-xs opacity-75">
-                                    +{assignment.workers.length - 2}
-                                  </span>
-                                )}
+                          <div className="flex-1 flex flex-col justify-end">
+                            {assignment.workers && assignment.workers.length > 0 && (
+                              <div className="flex items-center justify-between">
+                                <div className="flex space-x-1">
+                                  {assignment.workers.slice(0, 2).map((worker) => (
+                                    <span 
+                                      key={worker.id}
+                                      className="inline-flex items-center justify-center w-4 h-4 bg-white/80 rounded-full text-xs font-medium"
+                                    >
+                                      {worker.initials}
+                                    </span>
+                                  ))}
+                                  {assignment.workers.length > 2 && (
+                                    <span className="text-xs opacity-75">
+                                      +{assignment.workers.length - 2}
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                 {/* Edit and Remove Buttons */}
+                                 <div className="flex gap-1">
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-blue-200"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       setEditingAssignment(assignment);
+                                     }}
+                                   >
+                                     <Edit className="h-3 w-3 text-blue-600" />
+                                   </Button>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-red-200"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       removeAssignment(assignment.id);
+                                     }}
+                                   >
+                                     <X className="h-3 w-3 text-red-600" />
+                                   </Button>
+                                 </div>
                               </div>
-                              
-                               {/* Edit and Remove Buttons */}
-                               <div className="flex gap-1">
-                                 <Button
-                                   variant="ghost"
-                                   size="sm"
-                                   className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-blue-200"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     setEditingAssignment(assignment);
-                                   }}
-                                 >
-                                   <Edit className="h-2 w-2 md:h-3 md:w-3 text-blue-600" />
-                                 </Button>
-                                 <Button
-                                   variant="ghost"
-                                   size="sm"
-                                   className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     removeAssignment(assignment.id);
-                                   }}
-                                 >
-                                   <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
-                                 </Button>
-                               </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
 
                           {/* Conflict Indicator */}
                           {conflictSeverity && (
