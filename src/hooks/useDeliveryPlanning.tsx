@@ -16,15 +16,49 @@ import {
 
 // Default data
 const defaultZones: Zone[] = [
-  { id: 'fm', name: 'FM', color: '#3B82F6', postcodes: ['SE1', 'SE2'], capacity: 50, orders: [] },
-  { id: 'em', name: 'EM', color: '#10B981', postcodes: ['E1', 'E2'], capacity: 45, orders: [] },
-  { id: 'zon1', name: 'Zon1', color: '#8B5CF6', postcodes: ['N1', 'N2'], capacity: 40, orders: [] },
-  { id: 'zon2', name: 'Zon2', color: '#F59E0B', postcodes: ['W1', 'W2'], capacity: 35, orders: [] },
+  // Stockholm
+  { id: 'stb-fm', name: 'STB FM', color: '#0078D4', postcodes: ['111', '112', '113'], capacity: 50, orders: [] },
+  { id: 'stb-em', name: 'STB EM', color: '#106EBE', postcodes: ['114', '115', '116'], capacity: 45, orders: [] },
+  
+  // Malmö
+  { id: 'malmo-fm', name: 'Malmö FM', color: '#00BCF2', postcodes: ['211', '212', '213'], capacity: 40, orders: [] },
+  { id: 'malmo-em', name: 'Malmö EM', color: '#0099BC', postcodes: ['214', '215', '216'], capacity: 40, orders: [] },
+  { id: 'malmo-zon1', name: 'Malmö Zon1', color: '#40E0D0', postcodes: ['217', '218'], capacity: 35, orders: [] },
+  { id: 'malmo-zon2', name: 'Malmö Zon2', color: '#48CAE4', postcodes: ['219', '220'], capacity: 35, orders: [] },
+  { id: 'malmo-zon3', name: 'Malmö Zon3', color: '#0077BE', postcodes: ['221', '222'], capacity: 35, orders: [] },
+  
+  // Mellansverige
+  { id: 'mellansverige', name: 'Mellansverige', color: '#FFA500', postcodes: ['601', '602', '603'], capacity: 60, orders: [] },
+  { id: 'ms-zon1', name: 'M.S. Zon1', color: '#FF8C00', postcodes: ['604', '605'], capacity: 30, orders: [] },
+  { id: 'ms-zon2', name: 'M.S. Zon2', color: '#FF7F50', postcodes: ['606', '607'], capacity: 30, orders: [] },
+  { id: 'ms-zon3', name: 'M.S. Zon3', color: '#FF6347', postcodes: ['608', '609'], capacity: 30, orders: [] },
+  
+  // Göteborg
+  { id: 'goteborg-zon1', name: 'Göteborg Zon1', color: '#32CD32', postcodes: ['401', '402'], capacity: 35, orders: [] },
+  { id: 'goteborg-zon2', name: 'Göteborg Zon2', color: '#228B22', postcodes: ['403', '404'], capacity: 35, orders: [] },
+  { id: 'goteborg-zon3', name: 'Göteborg Zon3', color: '#006400', postcodes: ['405', '406'], capacity: 35, orders: [] },
+  { id: 'goteborg-zon4', name: 'Göteborg Zon4', color: '#9ACD32', postcodes: ['407', '408'], capacity: 35, orders: [] },
+  
+  // Norge
+  { id: 'norge-zon1', name: 'Norge Zon1', color: '#8B0000', postcodes: ['501', '502'], capacity: 30, orders: [] },
+  { id: 'norge-zon2', name: 'Norge Zon2', color: '#B22222', postcodes: ['503', '504'], capacity: 30, orders: [] },
+  { id: 'norge-zon3', name: 'Norge Zon3', color: '#DC143C', postcodes: ['505', '506'], capacity: 30, orders: [] },
+  { id: 'norge-zon4', name: 'Norge Zon4', color: '#FF1493', postcodes: ['507', '508'], capacity: 30, orders: [] },
+  
+  // Danmark
+  { id: 'danmark-zon1', name: 'Danmark Zon1', color: '#800080', postcodes: ['301', '302'], capacity: 30, orders: [] },
+  { id: 'danmark-zon2', name: 'Danmark Zon2', color: '#9370DB', postcodes: ['303', '304'], capacity: 30, orders: [] },
+  { id: 'danmark-zon3', name: 'Danmark Zon3', color: '#8A2BE2', postcodes: ['305', '306'], capacity: 30, orders: [] },
+  { id: 'danmark-zon4', name: 'Danmark Zon4', color: '#9932CC', postcodes: ['307', '308'], capacity: 30, orders: [] },
 ];
 
 const defaultZoneGroups: ZoneGroup[] = [
-  { id: 'north-route', name: 'North Route', color: '#EF4444', zones: ['fm', 'zon1'] },
-  { id: 'city-east', name: 'City East', color: '#06B6D4', zones: ['em', 'zon2'] },
+  { id: 'stockholm-group', name: 'Stockholm', color: '#0078D4', zones: ['stb-fm', 'stb-em'] },
+  { id: 'malmo-group', name: 'Malmö Region', color: '#00BCF2', zones: ['malmo-fm', 'malmo-em', 'malmo-zon1', 'malmo-zon2', 'malmo-zon3'] },
+  { id: 'mellansverige-group', name: 'Mellansverige Region', color: '#FFA500', zones: ['mellansverige', 'ms-zon1', 'ms-zon2', 'ms-zon3'] },
+  { id: 'goteborg-group', name: 'Göteborg Region', color: '#32CD32', zones: ['goteborg-zon1', 'goteborg-zon2', 'goteborg-zon3', 'goteborg-zon4'] },
+  { id: 'norge-group', name: 'Norge', color: '#8B0000', zones: ['norge-zon1', 'norge-zon2', 'norge-zon3', 'norge-zon4'] },
+  { id: 'danmark-group', name: 'Danmark', color: '#800080', zones: ['danmark-zon1', 'danmark-zon2', 'danmark-zon3', 'danmark-zon4'] },
 ];
 
 const defaultWorkers: Worker[] = [
