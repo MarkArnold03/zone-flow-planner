@@ -71,6 +71,12 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Today/Current time highlighting */
+    --today-highlight: 45 100% 95%;
+    --today-border: 45 90% 55%;
+    --current-time: 45 90% 55%;
+    --current-time-bg: 45 100% 97%;
   }
 
   .dark {
@@ -109,6 +115,12 @@ All colors MUST be HSL.
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Today/Current time highlighting - dark mode */
+    --today-highlight: 45 50% 15%;
+    --today-border: 45 90% 55%;
+    --current-time: 45 90% 55%;
+    --current-time-bg: 45 50% 10%;
   }
 }
 
@@ -120,4 +132,31 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  /* Responsive utilities for perfect mobile experience */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  
+  /* Perfect responsive text scaling */
+  .text-responsive-xs { @apply text-xs sm:text-sm; }
+  .text-responsive-sm { @apply text-sm sm:text-base; }
+  .text-responsive-base { @apply text-base sm:text-lg; }
+  .text-responsive-lg { @apply text-lg sm:text-xl lg:text-2xl; }
 }

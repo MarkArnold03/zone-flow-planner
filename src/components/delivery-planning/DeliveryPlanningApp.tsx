@@ -7,7 +7,7 @@ export function DeliveryPlanningApp() {
   const [selectedAssignment, setSelectedAssignment] = useState<DeliveryAssignment | null>(null);
 
   return (
-    <div className="min-h-screen bg-background flex animate-fade-in">
+    <div className="min-h-screen bg-background flex flex-col lg:flex-row animate-fade-in">
       <PlanningSidebar 
         selectedAssignment={selectedAssignment}
         onAssignmentClose={() => setSelectedAssignment(null)}

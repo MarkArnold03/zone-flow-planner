@@ -74,6 +74,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				today: {
+					highlight: 'hsl(var(--today-highlight))',
+					border: 'hsl(var(--today-border))',
+					time: 'hsl(var(--current-time))',
+					'time-bg': 'hsl(var(--current-time-bg))'
 				}
 			},
 			borderRadius: {

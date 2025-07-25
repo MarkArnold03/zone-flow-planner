@@ -87,7 +87,7 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
   }, [toast]);
 
   return (
-    <div className="flex-1 space-y-6 p-6 animate-fade-in">
+    <div className="flex-1 space-y-3 sm:space-y-4 lg:space-y-6 p-2 sm:p-4 lg:p-6 animate-fade-in overflow-hidden">
       <PlanningHeader />
       
       {/* View Toggle */}
@@ -139,9 +139,9 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
       </div>
 
       {/* Calendar View */}
-      <Card className="overflow-hidden shadow-sm border border-gray-200">
+      <Card className="flex-1 overflow-hidden shadow-soft border border-border bg-gradient-to-br from-card to-card/50">
         {showCarousel ? (
-          <div className="p-6">
+          <div className="p-3 sm:p-4 lg:p-6">
             <TimeSlotCarousel
               selectedDate={state.currentDate}
               onDrop={onDrop}
@@ -150,7 +150,7 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
             />
           </div>
         ) : state.viewMode === 'week' ? (
-          <div className="h-[600px] md:h-[800px]">
+          <div className="h-[500px] sm:h-[600px] lg:h-[700px] xl:h-[800px] flex flex-col">
             <WeekView
               onDrop={onDrop}
               onDragOver={handleDragOver}
@@ -158,13 +158,13 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
               onTimeRangeSelect={handleTimeRangeSelect}
               dragSelection={dragSelection}
               setDragSelection={setDragSelection}
-                onAssignmentSelect={(assignment) => {
-                  onAssignmentSelect?.(assignment);
-                }}
-              />
-            </div>
+              onAssignmentSelect={(assignment) => {
+                onAssignmentSelect?.(assignment);
+              }}
+            />
+          </div>
         ) : (
-          <div className="p-6">
+          <div className="p-3 sm:p-4 lg:p-6">
             <MonthView
               onDrop={onDrop}
               onDragOver={handleDragOver}

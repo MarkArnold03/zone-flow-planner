@@ -26,17 +26,29 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
     e.preventDefault();
     setIsDragOver(false);
     const assignmentData = e.dataTransfer.getData('assignment');
+    const zoneData = e.dataTransfer.getData('zone');
+    const zoneGroupData = e.dataTransfer.getData('zoneGroup');
     
-    if (assignmentData) {
+    // Only remove assignments if they are being dropped directly on a removal zone
+    // Don't interfere with zone/group dragging to calendar
+    if (assignmentData && !zoneData && !zoneGroupData) {
       const assignment = JSON.parse(assignmentData);
-      // Remove the assignment when dropped back to sidebar
-      removeAssignment(assignment.id);
+      // Only remove if dropped in the header removal area, not the whole sidebar
+      const rect = e.currentTarget.getBoundingClientRect();
+      const headerHeight = 120; // Approximate header height
+      if (e.clientY - rect.top < headerHeight) {
+        removeAssignment(assignment.id);
+      }
     }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragOver(true);
+    const assignmentData = e.dataTransfer.getData('assignment');
+    // Only show drag over effect for assignments being removed
+    if (assignmentData) {
+      setIsDragOver(true);
+    }
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
@@ -45,24 +57,26 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
   };
 
   return (
-    <div className={`w-80 border-r bg-card shadow-lg flex flex-col animate-slide-in-right transition-colors ${
+    <div className={`w-72 sm:w-80 lg:w-96 border-r border-border bg-card shadow-soft flex flex-col transition-all duration-300 ${
       isDragOver ? 'bg-muted/50 border-primary/30' : ''
     }`}
          onDrop={handleDrop}
          onDragOver={handleDragOver}
          onDragLeave={handleDragLeave}
     >
-      {/* Sidebar Header */}
-      <div className="p-4 border-b space-y-3">
+      {/* Sidebar Header - Removal zone */}
+      <div className={`p-3 sm:p-4 border-b border-border space-y-3 transition-colors ${
+        isDragOver ? 'bg-destructive/10 border-destructive/30' : ''
+      }`}>
         <div>
           <h2 className="text-lg font-bold text-foreground">
             Delivery Control Panel
           </h2>
           <p className="text-xs text-muted-foreground">
-            Drag & drop to assign zones • Drop assignments here to remove
+            Drag zones to calendar to assign • Drop assignments here to remove
             {isDragOver && (
-              <span className="block text-primary font-medium mt-1">
-                🎯 Drop here to remove assignment
+              <span className="block text-destructive font-medium mt-1 animate-pulse">
+                🗑️ Drop assignment here to remove
               </span>
             )}
           </p>

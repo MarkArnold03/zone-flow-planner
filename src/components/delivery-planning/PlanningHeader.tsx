@@ -37,39 +37,39 @@ export function PlanningHeader() {
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center space-x-4">
-        <h1 className="text-3xl font-bold text-foreground">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <h1 className="text-responsive-lg font-bold text-foreground">
           Delivery Planning
         </h1>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Button variant="outline" size="sm" onClick={goToPrevious}>
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <Button variant="outline" size="sm" onClick={goToNext}>
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="sm" onClick={goToToday}>
+          <Button variant="outline" size="sm" onClick={goToToday} className="bg-today-highlight border-today-border text-today-time hover:bg-today-time-bg">
             Today
           </Button>
         </div>
       </div>
       
-      <div className="flex items-center space-x-4">
-        <h2 className="text-xl font-semibold text-muted-foreground">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-responsive-base font-semibold text-muted-foreground">
           {getHeaderText()}
         </h2>
         
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" onClick={() => navigate('/route-map')}>
-            <MapPin className="h-4 w-4 mr-2" />
-            Route Map
+        <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={() => navigate('/route-map')} className="flex-shrink-0">
+            <MapPin className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Route Map</span>
           </Button>
           <ExportTools />
           <SettingsDialog>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4 mr-2" />
-              Settings
+            <Button variant="outline" size="sm" className="flex-shrink-0">
+              <Settings className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Settings</span>
             </Button>
           </SettingsDialog>
         </div>
