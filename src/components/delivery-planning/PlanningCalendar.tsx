@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,7 @@ import { WeekView } from './WeekView';
 import { MonthView } from './MonthView';
 import { PlanningHeader } from './PlanningHeader';
 import { TimeSlotCarousel } from './TimeSlotCarousel';
+import { useToast } from '@/hooks/use-toast';
 
 export function PlanningCalendar() {
   const {
@@ -17,6 +18,7 @@ export function PlanningCalendar() {
     getAssignments,
     handleDrop,
   } = useDeliveryPlanning();
+  const { toast } = useToast();
 
   const [showCarousel, setShowCarousel] = useState(false);
 
@@ -45,6 +47,13 @@ export function PlanningCalendar() {
       handleDrop({ type: 'worker', data: JSON.parse(workerData) }, date, timeSlot);
     }
   };
+
+  const handleTimeRangeSelect = useCallback((date: Date, startHour: number, endHour: number) => {
+    toast({
+      title: "Time range selected",
+      description: `Selected ${date.toLocaleDateString()} from ${startHour}:00 to ${endHour}:00. Drag a zone from the sidebar to assign it.`,
+    });
+  }, [toast]);
 
   return (
     <div className="flex-1 p-6 space-y-6 animate-fade-in">
@@ -114,11 +123,12 @@ export function PlanningCalendar() {
             />
           </div>
         ) : state.viewMode === 'week' ? (
-          <div className="h-[700px]">
+          <div className="h-[500px] md:h-[700px]">
             <WeekView
               onDrop={onDrop}
               onDragOver={handleDragOver}
               getAssignments={getAssignments}
+              onTimeRangeSelect={handleTimeRangeSelect}
             />
           </div>
         ) : (
