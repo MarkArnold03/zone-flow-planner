@@ -57,7 +57,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
   };
 
   return (
-    <div className={`w-72 sm:w-80 lg:w-96 border-r border-border/50 bg-gradient-sidebar shadow-heavy flex flex-col transition-all duration-300 relative z-10 glass-heavy ${
+    <div className={`w-72 sm:w-80 lg:w-96 border-r border-border/50 bg-gradient-sidebar shadow-heavy flex flex-col transition-all duration-300 relative z-10 glass-heavy h-full overflow-hidden ${
       isDragOver ? 'bg-muted/50 border-primary/30 shadow-glow' : ''
     }`}
          onDrop={handleDrop}
@@ -115,7 +115,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
           <TabsContent value="zones" className="h-full p-0 m-0">
             <ZoneManagement searchQuery={searchQuery} />
           </TabsContent>
@@ -125,7 +125,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
           </TabsContent>
           
           <TabsContent value="routes" className="h-full p-0 m-0">
-            <div className="p-4 space-y-4 h-full overflow-y-auto">
+            <div className="p-4 space-y-4">
               <RouteVisualization 
                 zones={[]} 
                 assignments={[]} 

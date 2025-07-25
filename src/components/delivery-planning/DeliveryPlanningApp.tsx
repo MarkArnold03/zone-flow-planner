@@ -7,7 +7,7 @@ export function DeliveryPlanningApp() {
   const [selectedAssignment, setSelectedAssignment] = useState<DeliveryAssignment | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-header flex flex-col lg:flex-row animate-fade-in relative overflow-hidden">
+    <div className="h-screen bg-gradient-header flex flex-col lg:flex-row animate-fade-in relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 pointer-events-none" />
       <div className="absolute top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none animate-pulse" />

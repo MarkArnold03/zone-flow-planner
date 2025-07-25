@@ -147,10 +147,10 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
   }, [getAssignments]);
 
   return (
-    <div className="h-full bg-gradient-card rounded-lg flex flex-col shadow-medium relative z-10 animate-fade-in" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+    <div className="h-full bg-gradient-card flex flex-col shadow-medium relative z-10 animate-fade-in overflow-hidden" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       {/* Selection Display */}
       {dragSelection && (
-        <div className="p-2 glass border-b border-border/30 flex items-center justify-between animate-slide-up shadow-inner">
+        <div className="p-2 glass border-b border-border/30 flex items-center justify-between animate-slide-up shadow-inner flex-shrink-0">
           <span className="text-sm text-primary bg-gradient-primary bg-clip-text text-transparent font-medium">
             Selected: {format(dragSelection.date, 'EEE dd')} {dragSelection.startHour}:00 - {dragSelection.endHour}:00
           </span>
@@ -161,7 +161,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
       )}
       
       {/* Calendar Header - Time slots horizontal */}
-      <div className="border-b border-border/50 bg-gradient-header">
+      <div className="border-b border-border/50 bg-gradient-header flex-shrink-0">
         <div className="flex">
           {/* Empty corner cell */}
           <div className="w-20 sm:w-24 md:w-32 p-1 sm:p-2 md:p-4 border-r border-border/50 glass flex-shrink-0 shadow-inner">
@@ -192,7 +192,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
       </div>
 
       {/* Calendar Body */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto min-h-0">
         {/* Day rows - vertical */}
         {weekDays.map((day, dayIndex) => (
           <div key={day.toISOString()} className="flex border-b border-border/30 last:border-b-0">

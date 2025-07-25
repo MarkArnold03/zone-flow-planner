@@ -87,11 +87,11 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
   }, [toast]);
 
   return (
-    <div className="flex-1 space-y-3 sm:space-y-4 lg:space-y-6 p-2 sm:p-4 lg:p-6 animate-fade-in overflow-hidden">
+    <div className="flex-1 flex flex-col p-2 sm:p-4 lg:p-6 animate-fade-in overflow-hidden h-full">
       <PlanningHeader />
       
       {/* View Toggle */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
           <Button
             variant={state.viewMode === 'week' ? 'default' : 'outline'}
@@ -139,9 +139,9 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
       </div>
 
       {/* Calendar View */}
-      <Card className="flex-1 overflow-hidden shadow-soft border border-border bg-gradient-to-br from-card to-card/50">
+      <Card className="flex-1 flex flex-col shadow-soft border border-border bg-gradient-to-br from-card to-card/50 overflow-hidden">
         {showCarousel ? (
-          <div className="p-3 sm:p-4 lg:p-6">
+          <div className="p-3 sm:p-4 lg:p-6 overflow-y-auto">
             <TimeSlotCarousel
               selectedDate={state.currentDate}
               onDrop={onDrop}
@@ -150,21 +150,19 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
             />
           </div>
         ) : state.viewMode === 'week' ? (
-          <div className="h-[500px] sm:h-[600px] lg:h-[700px] xl:h-[800px] flex flex-col">
-            <WeekView
-              onDrop={onDrop}
-              onDragOver={handleDragOver}
-              getAssignments={getAssignments}
-              onTimeRangeSelect={handleTimeRangeSelect}
-              dragSelection={dragSelection}
-              setDragSelection={setDragSelection}
-              onAssignmentSelect={(assignment) => {
-                onAssignmentSelect?.(assignment);
-              }}
-            />
-          </div>
+          <WeekView
+            onDrop={onDrop}
+            onDragOver={handleDragOver}
+            getAssignments={getAssignments}
+            onTimeRangeSelect={handleTimeRangeSelect}
+            dragSelection={dragSelection}
+            setDragSelection={setDragSelection}
+            onAssignmentSelect={(assignment) => {
+              onAssignmentSelect?.(assignment);
+            }}
+          />
         ) : (
-          <div className="p-3 sm:p-4 lg:p-6">
+          <div className="p-3 sm:p-4 lg:p-6 overflow-y-auto">
             <MonthView
               onDrop={onDrop}
               onDragOver={handleDragOver}
