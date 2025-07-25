@@ -145,22 +145,40 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
         </div>
       )}
       
-      {/* Calendar Header - Days of the week */}
+      {/* Calendar Header - Time slots horizontal */}
       <div className="border-b border-gray-200">
-        <div className="grid grid-cols-8 gap-0 md:grid-cols-8 sm:grid-cols-4">
+        <div className="flex">
           {/* Empty corner cell */}
-          <div className="p-2 md:p-4 border-r border-gray-200 bg-gray-50">
-            <div className="text-xs md:text-sm font-medium text-gray-500"></div>
+          <div className="w-24 md:w-32 p-2 md:p-4 border-r border-gray-200 bg-gray-50 flex-shrink-0">
+            <div className="text-xs md:text-sm font-medium text-gray-500">Time / Date</div>
           </div>
           
-          {/* Day headers */}
-          {weekDays.map((day, index) => (
-            <div 
-              key={day.toISOString()} 
-              className={`p-2 md:p-4 text-center border-r border-gray-200 bg-gray-50 last:border-r-0 ${
-                index >= 3 ? 'hidden sm:block' : ''
-              }`}
-            >
+          {/* Time slot headers - horizontal */}
+          <div className="flex-1 overflow-x-auto">
+            <div className="flex min-w-max">
+              {timeSlots.map((slot) => (
+                <div 
+                  key={slot.id}
+                  className="w-20 md:w-24 p-1 md:p-2 text-center border-r border-gray-200 bg-gray-50 last:border-r-0 flex-shrink-0"
+                >
+                  <div className="text-xs font-medium text-gray-900">
+                    <span className="hidden md:inline">{slot.label}</span>
+                    <span className="md:hidden">{slot.start}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Calendar Body */}
+      <div className="flex-1 overflow-auto">
+        {/* Day rows - vertical */}
+        {weekDays.map((day, dayIndex) => (
+          <div key={day.toISOString()} className="flex border-b border-gray-200 last:border-b-0">
+            {/* Date column - vertical */}
+            <div className="w-24 md:w-32 p-2 md:p-4 border-r border-gray-200 bg-gray-50 flex-shrink-0 flex flex-col justify-center">
               <div className="text-xs md:text-sm font-medium text-gray-900">
                 <span className="hidden md:inline">{format(day, 'EEEE')}</span>
                 <span className="md:hidden">{format(day, 'EEE')}</span>
@@ -169,133 +187,110 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                 {format(day, 'd')}
               </div>
               <div className="text-xs text-gray-500 hidden md:block">
-                {format(day, 'MMMM yyyy')}
+                {format(day, 'MMM yyyy')}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Calendar Body */}
-      <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-8 gap-0 min-h-full md:grid-cols-8 sm:grid-cols-4">
-          {/* Time column */}
-          <div className="border-r border-gray-200 bg-gray-50">
-            {timeSlots.map((slot) => (
-              <div key={slot.id} className="h-12 md:h-16 p-1 md:p-2 border-b border-gray-200 text-right">
-                <div className="text-xs text-gray-500 font-medium">
-                  <span className="hidden md:inline">{slot.label}</span>
-                  <span className="md:hidden">{slot.start}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Day columns */}
-          {weekDays.map((day, dayIndex) => (
-            <div 
-              key={day.toISOString()} 
-              className={`border-r border-gray-200 last:border-r-0 ${
-                dayIndex >= 3 ? 'hidden sm:block' : ''
-              }`}
-            >
-              {timeSlots.map((slot) => {
-                const assignments = getAssignments(day, slot.id);
-                const stretchedAssignments = getStretchedAssignments(day, parseInt(slot.id));
-                const hour = parseInt(slot.id);
-                const inDragRange = isInDragRange(day, hour);
-                const inSelection = isInSelection(day, hour);
-                const isHidden = isPartOfStretchedAssignment(day, hour);
-                
-                return (
-                  <div
-                    key={`${day.toISOString()}-${slot.id}`}
-                    className={`h-12 md:h-16 p-1 border-b border-gray-200 relative transition-colors cursor-pointer select-none ${
-                      inDragRange ? 'bg-primary/20' : 
-                      inSelection ? 'bg-primary/10 border border-primary/30' :
-                      'hover:bg-muted/50'
-                    }`}
-                    onDrop={(e) => onDrop(e, day, slot.id)}
-                    onDragOver={onDragOver}
-                    onMouseDown={(e) => handleMouseDown(day, hour, e)}
-                    onMouseEnter={() => handleMouseEnter(day, hour)}
-                  >
-                    {/* Show stretched assignments that start at this hour */}
-                    {stretchedAssignments.map((assignment) => {
-                      const conflictSeverity = getConflictSeverity(assignment);
-                      const hourSpan = (assignment.endHour || hour + 1) - hour;
-                      const cellHeight = window.innerWidth >= 768 ? 64 : 48; // md:h-16 = 64px, h-12 = 48px
-                      const borderHeight = 1; // border-b
-                      const calculatedHeight = hourSpan * cellHeight + (hourSpan - 1) * borderHeight - 8; // -8 for padding
-                      
-                      return (
-                        <div 
-                          key={assignment.id} 
-                          className={`absolute left-0 right-0 top-0 rounded-md px-2 py-1 group cursor-pointer shadow-sm border-l-4 z-20 overflow-hidden flex flex-col ${
-                            conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
-                            conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
-                            conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary-foreground' :
-                            'bg-primary/10 border-primary text-primary-foreground'
-                          }`}
-                          style={{
-                            height: `${hourSpan * cellHeight + (hourSpan - 1) * borderHeight}px`,
-                            backgroundColor: assignment.zone?.color ? `${assignment.zone.color}30` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}30` : undefined,
-                            borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
-                          }}
-                          draggable
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedAssignment(assignment);
-                            onAssignmentSelect?.(assignment);
-                          }}
-                          onDragStart={(e) => {
-                            e.dataTransfer.setData('assignment', JSON.stringify(assignment));
-                          }}
-                        >
-                          <div className="font-medium truncate text-sm">
-                            {assignment.zone?.name || assignment.zoneGroup?.name}
-                          </div>
-                          <div className="text-xs opacity-75 mb-1">
-                            {assignment.startHour}:00 - {assignment.endHour}:00
-                          </div>
-                          
-                           {/* Edit and Remove Buttons */}
-                           <div className="flex-1 flex justify-end items-start">
-                             <div className="flex gap-1">
-                               <Button
-                                 variant="ghost"
-                                 size="sm"
-                                 className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-blue-200"
-                                 onClick={(e) => {
-                                   e.stopPropagation();
-                                   setEditingAssignment(assignment);
-                                 }}
-                               >
-                                 <Edit className="h-3 w-3 text-primary" />
-                               </Button>
-                               <Button
-                                 variant="ghost"
-                                 size="sm"
-                                 className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-red-200"
-                                 onClick={(e) => {
-                                   e.stopPropagation();
-                                   removeAssignment(assignment.id);
-                                 }}
-                               >
-                                 <X className="h-3 w-3 text-red-600" />
-                               </Button>
+            {/* Time slots row */}
+            <div className="flex-1 overflow-x-auto">
+              <div className="flex min-w-max">
+                {timeSlots.map((slot) => {
+                  const assignments = getAssignments(day, slot.id);
+                  const stretchedAssignments = getStretchedAssignments(day, parseInt(slot.id));
+                  const hour = parseInt(slot.id);
+                  const inDragRange = isInDragRange(day, hour);
+                  const inSelection = isInSelection(day, hour);
+                  const isHidden = isPartOfStretchedAssignment(day, hour);
+                  
+                  return (
+                    <div
+                      key={`${day.toISOString()}-${slot.id}`}
+                      className={`w-20 md:w-24 h-16 md:h-20 border-r border-gray-200 last:border-r-0 relative transition-colors cursor-pointer select-none flex-shrink-0 ${
+                        inDragRange ? 'bg-primary/20' : 
+                        inSelection ? 'bg-primary/10 border border-primary/30' :
+                        'hover:bg-muted/50'
+                      }`}
+                      onDrop={(e) => onDrop(e, day, slot.id)}
+                      onDragOver={onDragOver}
+                      onMouseDown={(e) => handleMouseDown(day, hour, e)}
+                      onMouseEnter={() => handleMouseEnter(day, hour)}
+                     >
+                       {/* Show stretched assignments that start at this hour */}
+                       {stretchedAssignments.map((assignment) => {
+                         const conflictSeverity = getConflictSeverity(assignment);
+                         const hourSpan = (assignment.endHour || hour + 1) - hour;
+                         const cellWidth = window.innerWidth >= 768 ? 96 : 80; // md:w-24 = 96px, w-20 = 80px
+                         const borderWidth = 1; // border-r
+                         const calculatedWidth = hourSpan * cellWidth + (hourSpan - 1) * borderWidth;
+                         
+                         return (
+                           <div 
+                             key={assignment.id} 
+                             className={`absolute top-0 bottom-0 left-0 rounded-md p-1 group cursor-pointer shadow-sm border-t-4 z-20 overflow-hidden flex flex-col ${
+                               conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
+                               conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
+                               conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary-foreground' :
+                               'bg-primary/10 border-primary text-primary-foreground'
+                             }`}
+                             style={{
+                               width: `${calculatedWidth}px`,
+                               backgroundColor: assignment.zone?.color ? `${assignment.zone.color}30` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}30` : undefined,
+                               borderTopColor: assignment.zone?.color || assignment.zoneGroup?.color
+                             }}
+                             draggable
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               setSelectedAssignment(assignment);
+                               onAssignmentSelect?.(assignment);
+                             }}
+                             onDragStart={(e) => {
+                               e.dataTransfer.setData('assignment', JSON.stringify(assignment));
+                             }}
+                           >
+                             <div className="font-medium truncate text-xs">
+                               {assignment.zone?.name || assignment.zoneGroup?.name}
                              </div>
-                           </div>
+                             <div className="text-xs opacity-75 mb-1">
+                               {assignment.startHour}:00 - {assignment.endHour}:00
+                             </div>
+                             
+                              {/* Edit and Remove Buttons */}
+                              <div className="flex-1 flex justify-end items-start">
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-muted/20"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingAssignment(assignment);
+                                    }}
+                                  >
+                                    <Edit className="h-3 w-3 text-primary" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-destructive/20"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeAssignment(assignment.id);
+                                    }}
+                                  >
+                                    <X className="h-3 w-3 text-destructive" />
+                                  </Button>
+                                </div>
+                              </div>
 
-                          {/* Conflict Indicator */}
-                          {conflictSeverity && (
-                            <div className="absolute -top-1 -right-1">
-                              {getConflictIcon(conflictSeverity)}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                             {/* Conflict Indicator */}
+                             {conflictSeverity && (
+                               <div className="absolute -top-1 -right-1">
+                                 {getConflictIcon(conflictSeverity)}
+                               </div>
+                             )}
+                           </div>
+                         );
+                       })}
                     
                     {/* Show regular assignments (not stretched) if this cell is not hidden */}
                     {!isHidden && assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).length === 0 ? (
@@ -303,82 +298,83 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                         <div className="text-xs text-gray-400">+</div>
                       </div>
                     ) : !isHidden && (
-                      <div className="space-y-1 h-full overflow-hidden">
-                        {assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).map((assignment) => {
-                          const conflictSeverity = getConflictSeverity(assignment);
-                          
-                          return (
-                            <div 
-                              key={assignment.id} 
-                              className={`text-xs rounded-md px-1 md:px-2 py-1 relative group cursor-pointer shadow-sm border-l-2 md:border-l-4 h-full ${
-                                conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
-                                conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
-                               conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary-foreground' :
-                               'bg-primary/10 border-primary text-primary-foreground'
-                              }`}
-                              style={{
-                                backgroundColor: assignment.zone?.color ? `${assignment.zone.color}20` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}20` : undefined,
-                                borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
-                              }}
-                              draggable
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedAssignment(assignment);
-                                onAssignmentSelect?.(assignment);
-                              }}
-                              onDragStart={(e) => {
-                                e.dataTransfer.setData('assignment', JSON.stringify(assignment));
-                              }}
-                            >
-                              <div className="font-medium truncate text-xs md:text-sm">
-                                {assignment.zone?.name || assignment.zoneGroup?.name}
-                              </div>
-                              
-                               {/* Edit and Remove Buttons */}
-                               <div className="flex justify-end mt-1">
-                                 <div className="flex gap-1">
-                                   <Button
-                                     variant="ghost"
-                                     size="sm"
-                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-blue-200"
-                                     onClick={(e) => {
-                                       e.stopPropagation();
-                                       setEditingAssignment(assignment);
-                                     }}
-                                   >
-                                     <Edit className="h-2 w-2 md:h-3 md:w-3 text-primary" />
-                                   </Button>
-                                   <Button
-                                     variant="ghost"
-                                     size="sm"
-                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
-                                     onClick={(e) => {
-                                       e.stopPropagation();
-                                       removeAssignment(assignment.id);
-                                     }}
-                                   >
-                                     <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
-                                   </Button>
-                                 </div>
+                       <div className="p-1 h-full overflow-hidden">
+                         {assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).map((assignment) => {
+                           const conflictSeverity = getConflictSeverity(assignment);
+                           
+                           return (
+                             <div 
+                               key={assignment.id} 
+                               className={`text-xs rounded-md p-1 relative group cursor-pointer shadow-sm border-t-2 h-full ${
+                                 conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
+                                 conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
+                                conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary-foreground' :
+                                'bg-primary/10 border-primary text-primary-foreground'
+                               }`}
+                               style={{
+                                 backgroundColor: assignment.zone?.color ? `${assignment.zone.color}20` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}20` : undefined,
+                                 borderTopColor: assignment.zone?.color || assignment.zoneGroup?.color
+                               }}
+                               draggable
+                               onClick={(e) => {
+                                 e.stopPropagation();
+                                 setSelectedAssignment(assignment);
+                                 onAssignmentSelect?.(assignment);
+                               }}
+                               onDragStart={(e) => {
+                                 e.dataTransfer.setData('assignment', JSON.stringify(assignment));
+                               }}
+                             >
+                               <div className="font-medium truncate text-xs">
+                                 {assignment.zone?.name || assignment.zoneGroup?.name}
                                </div>
-
-                              {/* Conflict Indicator */}
-                              {conflictSeverity && (
-                                <div className="absolute -top-1 -right-1">
-                                  {getConflictIcon(conflictSeverity)}
+                               
+                                {/* Edit and Remove Buttons */}
+                                <div className="flex justify-end mt-1">
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 p-0 hover:bg-muted/20"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingAssignment(assignment);
+                                      }}
+                                    >
+                                      <Edit className="h-2 w-2 text-primary" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 p-0 hover:bg-destructive/20"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeAssignment(assignment.id);
+                                      }}
+                                    >
+                                      <X className="h-2 w-2 text-destructive" />
+                                    </Button>
+                                  </div>
                                 </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+
+                               {/* Conflict Indicator */}
+                               {conflictSeverity && (
+                                 <div className="absolute -top-1 -right-1">
+                                   {getConflictIcon(conflictSeverity)}
+                                 </div>
+                               )}
+                             </div>
+                           );
+                         })}
+                       </div>
                     )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       {/* Zone Assignment Editor */}
