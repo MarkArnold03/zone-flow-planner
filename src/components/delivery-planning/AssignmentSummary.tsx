@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, MapPin, Clock, Users, Package, X } from 'lucide-react';
+import { CalendarIcon, MapPin, Clock, Package, X } from 'lucide-react';
 import { DeliveryAssignment } from '@/types/delivery-planning';
 
 interface AssignmentSummaryProps {
@@ -52,22 +52,6 @@ export function AssignmentSummary({ assignment, onClose }: AssignmentSummaryProp
           </div>
         </div>
 
-        {/* Workers */}
-        {assignment.workers && assignment.workers.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>Workers ({assignment.workers.length})</span>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {assignment.workers.map((worker) => (
-                <Badge key={worker.id} variant="secondary" className="text-xs">
-                  {worker.name}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Delivery Info */}
         <div className="space-y-2">

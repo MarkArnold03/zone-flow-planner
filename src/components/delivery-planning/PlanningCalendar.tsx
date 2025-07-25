@@ -40,7 +40,6 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
     // Try to get different types of drag data
     const zoneData = e.dataTransfer.getData('zone');
     const zoneGroupData = e.dataTransfer.getData('zoneGroup');
-    const workerData = e.dataTransfer.getData('worker');
     const assignmentData = e.dataTransfer.getData('assignment');
 
     if (assignmentData) {
@@ -76,8 +75,6 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
       } else {
         handleDrop({ type: 'zoneGroup', data: JSON.parse(zoneGroupData) }, date, timeSlot);
       }
-    } else if (workerData) {
-      handleDrop({ type: 'worker', data: JSON.parse(workerData) }, date, timeSlot);
     }
   };
 
@@ -130,10 +127,6 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
         
         {/* Summary Stats */}
         <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-          <div className="flex items-center space-x-1">
-            <Users className="h-4 w-4" />
-            <span>{state.workers.length} workers available</span>
-          </div>
           <div className="flex items-center space-x-1">
             <MapPin className="h-4 w-4" />
             <span>{state.zones.length} zones</span>

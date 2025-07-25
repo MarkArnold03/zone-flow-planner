@@ -25,15 +25,7 @@ export interface ZoneGroup {
   description?: string;
 }
 
-export interface Worker {
-  id: string;
-  name: string;
-  initials: string;
-  avatar?: string;
-  skills: string[];
-}
-
-// Truck interface removed - trucks are no longer used in the system
+// Worker and Truck interfaces removed - no longer used in the system
 
 export interface TimeSlot {
   id: string;
@@ -50,7 +42,7 @@ export interface DeliveryAssignment {
   endHour?: number; // For multi-hour assignments
   zone?: Zone;
   zoneGroup?: ZoneGroup;
-  workers?: Worker[]; // Direct worker assignment instead of through trucks
+  
   deliveryCount: number;
   postcodes: string[];
   notes?: string;
@@ -85,7 +77,6 @@ export interface RouteStop {
 
 export interface Route {
   id: string;
-  workerId?: string; // Optional worker assignment
   date: Date;
   timeSlot: string;
   stops: RouteStop[];
@@ -100,19 +91,18 @@ export interface PlanningState {
   assignments: DeliveryAssignment[];
   zones: Zone[];
   zoneGroups: ZoneGroup[];
-  workers: Worker[]; // Direct worker management
+  
   notes: CalendarNote[];
   routes: Route[];
   filters: {
     zone?: string;
-    worker?: string;
     postcode?: string;
   };
 }
 
 export interface DragData {
-  type: 'zone' | 'zoneGroup' | 'worker' | 'assignment';
-  data: Zone | ZoneGroup | Worker | DeliveryAssignment;
+  type: 'zone' | 'zoneGroup' | 'assignment';
+  data: Zone | ZoneGroup | DeliveryAssignment;
   startHour?: number; // For time-range assignments
   endHour?: number; // For time-range assignments
 }
@@ -125,5 +115,5 @@ export interface ExportOptions {
   };
   includeRoutes: boolean;
   includeNotes: boolean;
-  groupByWorker: boolean;
+  
 }

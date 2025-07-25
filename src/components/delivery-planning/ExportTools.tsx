@@ -27,7 +27,7 @@ export function ExportTools() {
     // Simulate export functionality
     const exportData = {
       assignments: filteredAssignments,
-      workers: state.workers,
+      
       zones: state.zones,
       options: exportOptions,
       exportDate: new Date(),
@@ -46,12 +46,11 @@ export function ExportTools() {
 
   const getExportPreview = () => {
     const assignmentCount = filteredAssignments.length;
-    const workerCount = new Set(filteredAssignments.flatMap(a => a.workers?.map(w => w.id) || [])).size;
+    
     const zoneCount = new Set(filteredAssignments.map(a => a.zone?.id || a.zoneGroup?.id).filter(Boolean)).size;
     
     return {
       assignments: assignmentCount,
-      workers: workerCount,
       zones: zoneCount,
     };
   };
@@ -209,11 +208,6 @@ export function ExportTools() {
                   <Calendar className="h-3 w-3" />
                   <span>{preview.assignments}</span>
                   <span className="text-muted-foreground">assignments</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Users className="h-3 w-3" />
-                  <span>{preview.workers}</span>
-                  <span className="text-muted-foreground">workers</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <MapPin className="h-3 w-3" />

@@ -175,25 +175,6 @@ export function ZoneAssignmentEditor({ assignment, open, onClose }: ZoneAssignme
             />
           </div>
 
-          {/* Workers */}
-          {editedAssignment.workers && editedAssignment.workers.length > 0 && (
-            <div className="space-y-2">
-              <Label>Assigned Workers</Label>
-              <div className="flex flex-wrap gap-2">
-                {editedAssignment.workers.map((worker) => (
-                  <div
-                    key={worker.id}
-                    className="flex items-center gap-2 px-2 py-1 bg-blue-100 rounded-md text-sm"
-                  >
-                    <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs">
-                      {worker.initials}
-                    </span>
-                    {worker.name}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Actions */}
           <div className="flex gap-2 pt-4">

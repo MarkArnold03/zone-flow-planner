@@ -231,14 +231,14 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                       return (
                         <div 
                           key={assignment.id} 
-                          className={`absolute left-1 right-1 top-1 bottom-1 rounded-md px-2 py-1 group cursor-pointer shadow-sm border-l-4 z-20 overflow-hidden flex flex-col ${
+                          className={`absolute left-0 right-0 top-0 rounded-md px-2 py-1 group cursor-pointer shadow-sm border-l-4 z-20 overflow-hidden flex flex-col ${
                             conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
                             conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
                             conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
                             'bg-blue-100 border-blue-500 text-blue-800'
                           }`}
                           style={{
-                            height: `${calculatedHeight}px`,
+                            height: `${hourSpan * cellHeight + (hourSpan - 1) * borderHeight}px`,
                             backgroundColor: assignment.zone?.color ? `${assignment.zone.color}30` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}30` : undefined,
                             borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
                           }}
@@ -259,54 +259,33 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                             {assignment.startHour}:00 - {assignment.endHour}:00
                           </div>
                           
-                          {/* Worker Info */}
-                          <div className="flex-1 flex flex-col justify-end">
-                            {assignment.workers && assignment.workers.length > 0 && (
-                              <div className="flex items-center justify-between">
-                                <div className="flex space-x-1">
-                                  {assignment.workers.slice(0, 2).map((worker) => (
-                                    <span 
-                                      key={worker.id}
-                                      className="inline-flex items-center justify-center w-4 h-4 bg-white/80 rounded-full text-xs font-medium"
-                                    >
-                                      {worker.initials}
-                                    </span>
-                                  ))}
-                                  {assignment.workers.length > 2 && (
-                                    <span className="text-xs opacity-75">
-                                      +{assignment.workers.length - 2}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                 {/* Edit and Remove Buttons */}
-                                 <div className="flex gap-1">
-                                   <Button
-                                     variant="ghost"
-                                     size="sm"
-                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-blue-200"
-                                     onClick={(e) => {
-                                       e.stopPropagation();
-                                       setEditingAssignment(assignment);
-                                     }}
-                                   >
-                                     <Edit className="h-3 w-3 text-blue-600" />
-                                   </Button>
-                                   <Button
-                                     variant="ghost"
-                                     size="sm"
-                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-red-200"
-                                     onClick={(e) => {
-                                       e.stopPropagation();
-                                       removeAssignment(assignment.id);
-                                     }}
-                                   >
-                                     <X className="h-3 w-3 text-red-600" />
-                                   </Button>
-                                 </div>
-                              </div>
-                            )}
-                          </div>
+                           {/* Edit and Remove Buttons */}
+                           <div className="flex-1 flex justify-end items-start">
+                             <div className="flex gap-1">
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-blue-200"
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   setEditingAssignment(assignment);
+                                 }}
+                               >
+                                 <Edit className="h-3 w-3 text-blue-600" />
+                               </Button>
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-red-200"
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   removeAssignment(assignment.id);
+                                 }}
+                               >
+                                 <X className="h-3 w-3 text-red-600" />
+                               </Button>
+                             </div>
+                           </div>
 
                           {/* Conflict Indicator */}
                           {conflictSeverity && (
@@ -331,7 +310,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                           return (
                             <div 
                               key={assignment.id} 
-                              className={`text-xs rounded-md px-1 md:px-2 py-1 relative group cursor-pointer shadow-sm border-l-2 md:border-l-4 ${
+                              className={`text-xs rounded-md px-1 md:px-2 py-1 relative group cursor-pointer shadow-sm border-l-2 md:border-l-4 h-full ${
                                 conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
                                 conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
                                 conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
@@ -355,52 +334,33 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                 {assignment.zone?.name || assignment.zoneGroup?.name}
                               </div>
                               
-                              {/* Worker Info */}
-                              {assignment.workers && assignment.workers.length > 0 && (
-                                <div className="flex items-center justify-between mt-1">
-                                  <div className="flex space-x-1">
-                                    {assignment.workers.slice(0, 2).map((worker) => (
-                                      <span 
-                                        key={worker.id}
-                                        className="inline-flex items-center justify-center w-3 h-3 md:w-4 md:h-4 bg-white/50 rounded-full text-xs font-medium"
-                                      >
-                                        {worker.initials}
-                                      </span>
-                                    ))}
-                                    {assignment.workers.length > 2 && (
-                                      <span className="text-xs opacity-75">
-                                        +{assignment.workers.length - 2}
-                                      </span>
-                                    )}
-                                  </div>
-                                  
-                                   {/* Edit and Remove Buttons */}
-                                   <div className="flex gap-1">
-                                     <Button
-                                       variant="ghost"
-                                       size="sm"
-                                       className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-blue-200"
-                                       onClick={(e) => {
-                                         e.stopPropagation();
-                                         setEditingAssignment(assignment);
-                                       }}
-                                     >
-                                       <Edit className="h-2 w-2 md:h-3 md:w-3 text-blue-600" />
-                                     </Button>
-                                     <Button
-                                       variant="ghost"
-                                       size="sm"
-                                       className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
-                                       onClick={(e) => {
-                                         e.stopPropagation();
-                                         removeAssignment(assignment.id);
-                                       }}
-                                     >
-                                       <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
-                                     </Button>
-                                   </div>
-                                </div>
-                              )}
+                               {/* Edit and Remove Buttons */}
+                               <div className="flex justify-end mt-1">
+                                 <div className="flex gap-1">
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-blue-200"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       setEditingAssignment(assignment);
+                                     }}
+                                   >
+                                     <Edit className="h-2 w-2 md:h-3 md:w-3 text-blue-600" />
+                                   </Button>
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                       removeAssignment(assignment.id);
+                                     }}
+                                   >
+                                     <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
+                                   </Button>
+                                 </div>
+                               </div>
 
                               {/* Conflict Indicator */}
                               {conflictSeverity && (

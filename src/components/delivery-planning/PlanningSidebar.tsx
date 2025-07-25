@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { ZoneManagement } from './ZoneManagement';
 import { ZoneGroupsTab } from './ZoneGroupsTab';
-import { WorkersTab } from './WorkersTab';
 import { ToolsTab } from './ToolsTab';
 import { RouteVisualization } from './RouteVisualization';
 import { RouteOptimizer } from './RouteOptimizer';
@@ -53,16 +52,6 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
          onDragOver={handleDragOver}
          onDragLeave={handleDragLeave}
     >
-      {/* Assignment Details Section - Top Priority */}
-      {selectedAssignment && (
-        <div className="border-b">
-          <AssignmentSummary
-            assignment={selectedAssignment}
-            onClose={onAssignmentClose || (() => {})}
-          />
-        </div>
-      )}
-
       {/* Sidebar Header */}
       <div className="p-4 border-b space-y-3">
         <div>
@@ -93,7 +82,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
 
       {/* Tabs */}
       <Tabs defaultValue="zones" className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-5 mx-4 mt-4">
+        <TabsList className="grid w-full grid-cols-4 mx-4 mt-4">
           <TabsTrigger value="zones" className="text-xs">
             <MapPin className="h-3 w-3 mr-1" />
             Zones
@@ -101,10 +90,6 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
           <TabsTrigger value="groups" className="text-xs">
             <Package className="h-3 w-3 mr-1" />
             Groups
-          </TabsTrigger>
-          <TabsTrigger value="workers" className="text-xs">
-            <Users className="h-3 w-3 mr-1" />
-            Workers
           </TabsTrigger>
           <TabsTrigger value="routes" className="text-xs">
             <Route className="h-3 w-3 mr-1" />
@@ -125,10 +110,6 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
             <ZoneGroupsTab searchQuery={searchQuery} />
           </TabsContent>
           
-          <TabsContent value="workers" className="h-full p-0 m-0">
-            <WorkersTab searchQuery={searchQuery} />
-          </TabsContent>
-          
           <TabsContent value="routes" className="h-full p-0 m-0">
             <div className="p-4 space-y-4 h-full overflow-y-auto">
               <RouteVisualization 
@@ -145,6 +126,16 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
           </TabsContent>
         </div>
       </Tabs>
+
+      {/* Assignment Details Section */}
+      {selectedAssignment && (
+        <div className="border-t">
+          <AssignmentSummary
+            assignment={selectedAssignment}
+            onClose={onAssignmentClose || (() => {})}
+          />
+        </div>
+      )}
 
       {/* Notes Section */}
       <div className="border-t">

@@ -6,7 +6,6 @@ import {
   DeliveryAssignment,
   Zone,
   ZoneGroup,
-  Worker,
   CalendarNote,
   ConflictType,
   DragData,
@@ -61,14 +60,6 @@ const defaultZoneGroups: ZoneGroup[] = [
   { id: 'danmark-group', name: 'Danmark', color: '#800080', zones: ['danmark-zon1', 'danmark-zon2', 'danmark-zon3', 'danmark-zon4'] },
 ];
 
-const defaultWorkers: Worker[] = [
-  { id: 'w1', name: 'John Smith', initials: 'JS', skills: ['driver'] },
-  { id: 'w2', name: 'Maria Garcia', initials: 'MG', skills: ['helper'] },
-  { id: 'w3', name: 'David Chen', initials: 'DC', skills: ['driver'] },
-  { id: 'w4', name: 'Sarah Wilson', initials: 'SW', skills: ['helper'] },
-  { id: 'w5', name: 'Mike Johnson', initials: 'MJ', skills: ['driver'] },
-  { id: 'w6', name: 'Lisa Brown', initials: 'LB', skills: ['helper'] },
-];
 
 // Updated time slots for 5 AM to 11 PM (23:00)
 export const timeSlots: TimeSlot[] = Array.from({ length: 19 }, (_, i) => {
@@ -90,7 +81,7 @@ export function useDeliveryPlanning() {
     assignments: [],
     zones: defaultZones,
     zoneGroups: defaultZoneGroups,
-    workers: defaultWorkers,
+    
     notes: [],
     routes: [],
     filters: {},
@@ -106,22 +97,6 @@ export function useDeliveryPlanning() {
   const detectConflicts = useCallback((assignment: DeliveryAssignment): ConflictType[] => {
     const conflicts: ConflictType[] = [];
     
-    // Check for double booking (worker conflicts)
-    const existingAssignments = state.assignments.filter(a => 
-      isSameDay(a.date, assignment.date) && 
-      a.timeSlot === assignment.timeSlot &&
-      a.workers?.some(worker => assignment.workers?.some(w => w.id === worker.id))
-    );
-    
-    if (existingAssignments.length > 0) {
-      conflicts.push({
-        type: 'double_booking',
-        severity: 'high',
-        message: 'Worker already assigned to this time slot',
-        reason: 'One or more workers are already assigned to another zone/group during this time period',
-        suggestion: 'Choose different workers or time slot'
-      });
-    }
 
     // Check capacity exceeded
     if (assignment.zone && assignment.deliveryCount > assignment.zone.capacity) {
@@ -201,20 +176,6 @@ export function useDeliveryPlanning() {
         };
         break;
 
-      case 'worker':
-        const worker = data.data as Worker;
-        newAssignment = {
-          id: assignmentId,
-          date,
-          timeSlot,
-          startHour: data.startHour,
-          endHour: data.endHour,
-          workers: [worker],
-          deliveryCount: 0,
-          postcodes: [],
-          status: 'assigned'
-        };
-        break;
 
       default:
         return;
@@ -250,22 +211,12 @@ export function useDeliveryPlanning() {
       postcodes.some(pc => zone.postcodes.some(zpc => pc.startsWith(zpc)))
     );
 
-    // Find available workers
-    const availableWorkers = state.workers.filter(worker => 
-      !state.assignments.some(a => 
-        isSameDay(a.date, date) && 
-        a.timeSlot === timeSlot && 
-        a.workers?.some(w => w.id === worker.id)
-      )
-    );
-
-    if (bestZone && availableWorkers.length > 0) {
+    if (bestZone) {
       const assignment: DeliveryAssignment = {
         id: `smart-${format(date, 'yyyy-MM-dd')}-${timeSlot}-${Date.now()}`,
         date,
         timeSlot,
         zone: bestZone,
-        workers: availableWorkers.slice(0, 2), // Assign up to 2 workers
         deliveryCount: postcodes.length,
         postcodes,
         status: 'assigned'
@@ -281,7 +232,7 @@ export function useDeliveryPlanning() {
         description: `${postcodes.length} deliveries assigned to ${bestZone.name}`,
       });
     }
-  }, [state.zones, state.workers, state.assignments, toast]);
+  }, [state.zones, state.assignments, toast]);
 
   // Update state functions
   const updateDate = useCallback((date: Date) => {
@@ -399,7 +350,6 @@ export function useDeliveryPlanning() {
   const filteredAssignments = useMemo(() => {
     return state.assignments.filter(assignment => {
       if (state.filters.zone && assignment.zone?.id !== state.filters.zone) return false;
-      if (state.filters.worker && !assignment.workers?.some(w => w.id === state.filters.worker)) return false;
       if (state.filters.postcode && !assignment.postcodes.some(pc => pc.includes(state.filters.postcode!))) return false;
       return true;
     });

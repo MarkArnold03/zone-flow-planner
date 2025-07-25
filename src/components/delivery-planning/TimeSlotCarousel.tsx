@@ -141,22 +141,6 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                               </div>
                             )}
 
-                            {assignment.workers && assignment.workers.length > 0 && (
-                              <div className="mt-1">
-                                <div className="flex flex-wrap gap-1">
-                                  {assignment.workers.slice(0, 2).map((worker) => (
-                                    <Badge key={worker.id} variant="outline" className="text-xs h-4 px-1">
-                                      {worker.initials}
-                                    </Badge>
-                                  ))}
-                                  {assignment.workers.length > 2 && (
-                                    <Badge variant="outline" className="text-xs h-4 px-1">
-                                      +{assignment.workers.length - 2}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            )}
 
                             {assignment.conflicts && assignment.conflicts.length > 0 && (
                               <div className="mt-1">

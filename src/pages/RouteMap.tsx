@@ -25,16 +25,14 @@ export default function RouteMap() {
   // Filter assignments based on selections
   const filteredAssignments = state.assignments.filter(assignment => {
     const matchesDate = format(assignment.date, 'yyyy-MM-dd') === selectedDate;
-    const matchesWorker = !selectedWorker || assignment.workers?.some(w => w.id === selectedWorker);
+    const matchesWorker = !selectedWorker;
     const matchesTimeSlot = !selectedTimeSlot || assignment.timeSlot === selectedTimeSlot;
     return matchesDate && matchesWorker && matchesTimeSlot;
   });
 
   // Get unique dates, trucks, and time slots for filters
   const availableDates = [...new Set(state.assignments.map(a => format(a.date, 'yyyy-MM-dd')))];
-  const availableWorkers = state.workers.filter(worker => 
-    state.assignments.some(a => a.workers?.some(w => w.id === worker.id))
-  );
+  const availableWorkers: any[] = [];
   const availableTimeSlots = [...new Set(state.assignments.map(a => a.timeSlot))];
 
   useEffect(() => {
@@ -96,7 +94,7 @@ export default function RouteMap() {
               <h4 style="margin: 0 0 8px 0; color: ${assignment.zone.color};">${assignment.zone.name}</h4>
               <p style="margin: 0 0 4px 0;"><strong>Postcode:</strong> ${postcode}</p>
               <p style="margin: 0 0 4px 0;"><strong>Time:</strong> ${assignment.timeSlot}</p>
-              <p style="margin: 0 0 4px 0;"><strong>Workers:</strong> ${assignment.workers?.map(w => w.name).join(', ') || 'Unassigned'}</p>
+              <p style="margin: 0 0 4px 0;"><strong>Zone:</strong> ${assignment.zone?.name || 'Unassigned'}</p>
               <p style="margin: 0;"><strong>Stop:</strong> ${pcIndex + 1} of ${assignment.zone.postcodes.length}</p>
             </div>
           `);
@@ -306,7 +304,7 @@ export default function RouteMap() {
                 {filteredAssignments.map((assignment, index) => (
                   <div key={assignment.id} className="p-3 rounded border">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">{assignment.workers?.map(w => w.name).join(', ') || 'Unassigned'}</span>
+                      <span className="font-medium">{assignment.zone?.name || assignment.zoneGroup?.name || 'Unassigned'}</span>
                       <Badge variant="outline" className="text-xs">
                         {assignment.timeSlot}
                       </Badge>

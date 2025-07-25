@@ -15,7 +15,7 @@ export function ToolsTab() {
   };
 
   const clearFilters = () => {
-    updateFilters({ zone: undefined, worker: undefined, postcode: undefined });
+    updateFilters({ zone: undefined, postcode: undefined });
   };
 
   const getConflictCount = () => {
@@ -48,23 +48,6 @@ export function ToolsTab() {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          {/* Worker Filter */}
-          <div>
-            <label className="text-xs text-muted-foreground">Worker</label>
-            <Select onValueChange={(value) => handleFilterChange('worker', value)}>
-              <SelectTrigger className="h-8">
-                <SelectValue placeholder="All workers" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All workers</SelectItem>
-                {state.workers.map((worker) => (
-                  <SelectItem key={worker.id} value={worker.id}>
-                    {worker.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
 
           {/* Zone Filter */}
           <div>
@@ -101,12 +84,6 @@ export function ToolsTab() {
             <span>Conflicts:</span>
             <Badge variant={getConflictCount() > 0 ? "destructive" : "secondary"}>
               {getConflictCount()}
-            </Badge>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span>Available Workers:</span>
-            <Badge variant="secondary">
-              {state.workers.length}
             </Badge>
           </div>
         </CardContent>
