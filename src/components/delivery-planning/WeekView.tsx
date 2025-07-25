@@ -2,24 +2,32 @@ import React, { useState, useRef, useCallback } from 'react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trash2, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { Trash2, AlertTriangle, CheckCircle, X, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 import { DeliveryAssignment } from '@/types/delivery-planning';
+import { ZoneAssignmentEditor } from './ZoneAssignmentEditor';
 
 interface WeekViewProps {
   onDrop: (e: React.DragEvent, date: Date, timeSlot: string) => void;
   onDragOver: (e: React.DragEvent) => void;
   getAssignments: (date: Date, timeSlot: string) => DeliveryAssignment[];
   onTimeRangeSelect?: (date: Date, startHour: number, endHour: number) => void;
+  dragSelection?: { date: Date; startHour: number; endHour: number } | null;
+  setDragSelection?: React.Dispatch<React.SetStateAction<{ date: Date; startHour: number; endHour: number } | null>>;
 }
 
-export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect }: WeekViewProps) {
+export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect, dragSelection: externalDragSelection, setDragSelection: setExternalDragSelection }: WeekViewProps) {
   const { weekDays, removeAssignment } = useDeliveryPlanning();
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ date: Date; hour: number } | null>(null);
   const [dragEnd, setDragEnd] = useState<{ date: Date; hour: number } | null>(null);
-  const [dragSelection, setDragSelection] = useState<{ date: Date; startHour: number; endHour: number } | null>(null);
+  const [internalDragSelection, setInternalDragSelection] = useState<{ date: Date; startHour: number; endHour: number } | null>(null);
+  const [editingAssignment, setEditingAssignment] = useState<DeliveryAssignment | null>(null);
+  
+  // Use external drag selection if provided, otherwise use internal
+  const dragSelection = externalDragSelection || internalDragSelection;
+  const setDragSelection = setExternalDragSelection || setInternalDragSelection;
 
   // Generate time slots from 12 AM to 11 PM (24-hour format like Outlook)
   const timeSlots = Array.from({ length: 24 }, (_, i) => {
@@ -235,18 +243,31 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                     )}
                                   </div>
                                   
-                                  {/* Remove Button */}
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      removeAssignment(assignment.id);
-                                    }}
-                                  >
-                                    <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
-                                  </Button>
+                                   {/* Edit and Remove Buttons */}
+                                   <div className="flex gap-1">
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-blue-200"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         setEditingAssignment(assignment);
+                                       }}
+                                     >
+                                       <Edit className="h-2 w-2 md:h-3 md:w-3 text-blue-600" />
+                                     </Button>
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="opacity-0 group-hover:opacity-100 transition-opacity h-3 w-3 md:h-4 md:w-4 p-0 hover:bg-red-200"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         removeAssignment(assignment.id);
+                                       }}
+                                     >
+                                       <X className="h-2 w-2 md:h-3 md:w-3 text-red-600" />
+                                     </Button>
+                                   </div>
                                 </div>
                               )}
 
@@ -268,6 +289,13 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
           ))}
         </div>
       </div>
+
+      {/* Zone Assignment Editor */}
+      <ZoneAssignmentEditor
+        assignment={editingAssignment}
+        open={!!editingAssignment}
+        onClose={() => setEditingAssignment(null)}
+      />
     </div>
   );
 }

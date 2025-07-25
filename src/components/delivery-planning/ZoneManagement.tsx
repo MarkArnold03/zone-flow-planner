@@ -20,6 +20,7 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
   const [editingZone, setEditingZone] = useState<Zone | null>(null);
   const [showAddZone, setShowAddZone] = useState(false);
   const [showAddOrder, setShowAddOrder] = useState<string | null>(null);
+  const [showAllZones, setShowAllZones] = useState(false);
   
   const [newZone, setNewZone] = useState({
     name: '',
@@ -41,6 +42,10 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
     zone.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     zone.postcodes.some(pc => pc.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  // Show only 4 zones initially, unless "Show More" is clicked or search is active
+  const displayedZones = showAllZones || searchQuery ? filteredZones : filteredZones.slice(0, 4);
+  const hasMoreZones = filteredZones.length > 4 && !searchQuery;
 
   const handleDragStart = (e: React.DragEvent, zone: Zone) => {
     e.dataTransfer.setData('zone', JSON.stringify(zone));
@@ -160,7 +165,7 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
 
       {/* Zone Cards */}
       <div className="space-y-3">
-        {filteredZones.map((zone) => {
+        {displayedZones.map((zone) => {
           const zoneOrders = getZoneOrders(zone);
           
           return (
@@ -379,6 +384,20 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
             </Card>
           );
         })}
+        
+        {/* Show More/Show Less Button */}
+        {hasMoreZones && (
+          <div className="text-center pt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAllZones(!showAllZones)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {showAllZones ? 'Show Less' : `Show More (${filteredZones.length - 4} more)`}
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Help Text */}

@@ -21,6 +21,7 @@ export function PlanningCalendar() {
   const { toast } = useToast();
 
   const [showCarousel, setShowCarousel] = useState(false);
+  const [dragSelection, setDragSelection] = useState<{ date: Date; startHour: number; endHour: number } | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -40,15 +41,35 @@ export function PlanningCalendar() {
       const assignment = JSON.parse(assignmentData);
       handleDrop(assignment, date, timeSlot);
     } else if (zoneData) {
-      handleDrop({ type: 'zone', data: JSON.parse(zoneData) }, date, timeSlot);
+      // If there's a selected time range, fill the entire span
+      if (dragSelection && dragSelection.date.getTime() === date.getTime()) {
+        const zone = JSON.parse(zoneData);
+        // Create assignments for each hour in the selected range
+        for (let hour = dragSelection.startHour; hour < dragSelection.endHour; hour++) {
+          handleDrop({ type: 'zone', data: zone }, date, hour.toString());
+        }
+        setDragSelection(null);
+      } else {
+        handleDrop({ type: 'zone', data: JSON.parse(zoneData) }, date, timeSlot);
+      }
     } else if (zoneGroupData) {
-      handleDrop({ type: 'zoneGroup', data: JSON.parse(zoneGroupData) }, date, timeSlot);
+      // Handle time span for zone groups too
+      if (dragSelection && dragSelection.date.getTime() === date.getTime()) {
+        const zoneGroup = JSON.parse(zoneGroupData);
+        for (let hour = dragSelection.startHour; hour < dragSelection.endHour; hour++) {
+          handleDrop({ type: 'zoneGroup', data: zoneGroup }, date, hour.toString());
+        }
+        setDragSelection(null);
+      } else {
+        handleDrop({ type: 'zoneGroup', data: JSON.parse(zoneGroupData) }, date, timeSlot);
+      }
     } else if (workerData) {
       handleDrop({ type: 'worker', data: JSON.parse(workerData) }, date, timeSlot);
     }
   };
 
   const handleTimeRangeSelect = useCallback((date: Date, startHour: number, endHour: number) => {
+    setDragSelection({ date, startHour, endHour });
     toast({
       title: "Time range selected",
       description: `Selected ${date.toLocaleDateString()} from ${startHour}:00 to ${endHour}:00. Drag a zone from the sidebar to assign it.`,
@@ -129,6 +150,8 @@ export function PlanningCalendar() {
               onDragOver={handleDragOver}
               getAssignments={getAssignments}
               onTimeRangeSelect={handleTimeRangeSelect}
+              dragSelection={dragSelection}
+              setDragSelection={setDragSelection}
             />
           </div>
         ) : (
