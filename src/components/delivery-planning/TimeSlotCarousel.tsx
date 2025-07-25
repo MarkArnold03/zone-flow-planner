@@ -105,7 +105,7 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                           >
                             {assignment.zone && (
                               <div
-                                className="p-1 rounded text-xs text-white font-medium cursor-move flex items-center justify-between"
+                                className="p-1 rounded text-xs text-primary-foreground font-medium cursor-move flex items-center justify-between"
                                 style={{ backgroundColor: assignment.zone.color }}
                               >
                                 <span className="truncate flex-1">
@@ -114,7 +114,7 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/20"
+                                  className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted/20"
                                   onClick={(e) => handleRemoveAssignment(assignment.id, e)}
                                 >
                                   <X className="h-3 w-3" />
@@ -124,7 +124,7 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                             
                             {assignment.zoneGroup && (
                               <div
-                                className="p-1 rounded text-xs text-white font-medium cursor-move flex items-center justify-between"
+                                className="p-1 rounded text-xs text-primary-foreground font-medium cursor-move flex items-center justify-between"
                                 style={{ backgroundColor: assignment.zoneGroup.color }}
                               >
                                 <span className="truncate flex-1">
@@ -133,7 +133,7 @@ export function TimeSlotCarousel({ selectedDate, onDrop, onDragOver, getAssignme
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/20"
+                                  className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-muted/20"
                                   onClick={(e) => handleRemoveAssignment(assignment.id, e)}
                                 >
                                   <X className="h-3 w-3" />

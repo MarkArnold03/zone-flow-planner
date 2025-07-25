@@ -26,7 +26,7 @@ export const ZoneNode = memo(({ data }: ZoneNodeProps) => {
               className="w-8 h-8 rounded-full mx-auto flex items-center justify-center"
               style={{ backgroundColor: color }}
             >
-              <MapPin className="h-4 w-4 text-white" />
+              <MapPin className="h-4 w-4 text-primary-foreground" />
             </div>
             <div>
               <div className="font-semibold text-sm text-foreground">

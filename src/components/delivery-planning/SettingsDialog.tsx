@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Settings, Clock, MapPin, Bell, Palette, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -69,6 +69,9 @@ export function SettingsDialog({ children }: SettingsDialogProps) {
             <Settings className="h-5 w-5" />
             <span>Settings</span>
           </DialogTitle>
+          <DialogDescription>
+            Configure your delivery planning preferences and system settings.
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="general" className="w-full">

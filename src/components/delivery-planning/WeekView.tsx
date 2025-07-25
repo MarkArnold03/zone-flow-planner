@@ -62,7 +62,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
     switch (severity) {
       case 'high': return <AlertTriangle className="h-3 w-3 text-red-500" />;
       case 'medium': return <AlertTriangle className="h-3 w-3 text-yellow-500" />;
-      case 'low': return <AlertTriangle className="h-3 w-3 text-blue-500" />;
+      case 'low': return <AlertTriangle className="h-3 w-3 text-primary" />;
       default: return <CheckCircle className="h-3 w-3 text-green-500" />;
     }
   };
@@ -132,11 +132,11 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
   }, [getAssignments]);
 
   return (
-    <div className="h-full bg-white rounded-lg" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+    <div className="h-full bg-background rounded-lg" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       {/* Selection Display */}
       {dragSelection && (
-        <div className="p-2 bg-blue-50 border-b border-blue-200 flex items-center justify-between">
-          <span className="text-sm text-blue-700">
+        <div className="p-2 bg-muted/50 border-b border-muted-foreground/20 flex items-center justify-between">
+          <span className="text-sm text-primary">
             Selected: {format(dragSelection.date, 'EEE dd')} {dragSelection.startHour}:00 - {dragSelection.endHour}:00
           </span>
           <Button variant="ghost" size="sm" onClick={clearSelection}>
@@ -165,7 +165,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                 <span className="hidden md:inline">{format(day, 'EEEE')}</span>
                 <span className="md:hidden">{format(day, 'EEE')}</span>
               </div>
-              <div className="text-lg md:text-2xl font-semibold text-blue-600">
+              <div className="text-lg md:text-2xl font-semibold text-primary">
                 {format(day, 'd')}
               </div>
               <div className="text-xs text-gray-500 hidden md:block">
@@ -211,9 +211,9 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                   <div
                     key={`${day.toISOString()}-${slot.id}`}
                     className={`h-12 md:h-16 p-1 border-b border-gray-200 relative transition-colors cursor-pointer select-none ${
-                      inDragRange ? 'bg-blue-200' : 
-                      inSelection ? 'bg-blue-100 border border-blue-300' :
-                      'hover:bg-blue-50'
+                      inDragRange ? 'bg-primary/20' : 
+                      inSelection ? 'bg-primary/10 border border-primary/30' :
+                      'hover:bg-muted/50'
                     }`}
                     onDrop={(e) => onDrop(e, day, slot.id)}
                     onDragOver={onDragOver}
@@ -234,8 +234,8 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                           className={`absolute left-0 right-0 top-0 rounded-md px-2 py-1 group cursor-pointer shadow-sm border-l-4 z-20 overflow-hidden flex flex-col ${
                             conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
                             conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
-                            conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
-                            'bg-blue-100 border-blue-500 text-blue-800'
+                            conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary-foreground' :
+                            'bg-primary/10 border-primary text-primary-foreground'
                           }`}
                           style={{
                             height: `${hourSpan * cellHeight + (hourSpan - 1) * borderHeight}px`,
@@ -271,7 +271,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                    setEditingAssignment(assignment);
                                  }}
                                >
-                                 <Edit className="h-3 w-3 text-blue-600" />
+                                 <Edit className="h-3 w-3 text-primary" />
                                </Button>
                                <Button
                                  variant="ghost"
@@ -313,8 +313,8 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                               className={`text-xs rounded-md px-1 md:px-2 py-1 relative group cursor-pointer shadow-sm border-l-2 md:border-l-4 h-full ${
                                 conflictSeverity === 'high' ? 'bg-red-100 border-red-500 text-red-800' :
                                 conflictSeverity === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-800' :
-                                conflictSeverity === 'low' ? 'bg-blue-100 border-blue-500 text-blue-800' :
-                                'bg-blue-100 border-blue-500 text-blue-800'
+                               conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary-foreground' :
+                               'bg-primary/10 border-primary text-primary-foreground'
                               }`}
                               style={{
                                 backgroundColor: assignment.zone?.color ? `${assignment.zone.color}20` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}20` : undefined,
@@ -346,7 +346,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                        setEditingAssignment(assignment);
                                      }}
                                    >
-                                     <Edit className="h-2 w-2 md:h-3 md:w-3 text-blue-600" />
+                                     <Edit className="h-2 w-2 md:h-3 md:w-3 text-primary" />
                                    </Button>
                                    <Button
                                      variant="ghost"

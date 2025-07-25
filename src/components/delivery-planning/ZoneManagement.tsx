@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, MapPin, Package } from 'lucide-react';
@@ -119,6 +119,9 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New Zone</DialogTitle>
+              <DialogDescription>
+                Create a new delivery zone with a name, color, capacity, and associated postcodes.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -213,6 +216,9 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Edit Zone</DialogTitle>
+                          <DialogDescription>
+                            Modify the properties of this delivery zone.
+                          </DialogDescription>
                         </DialogHeader>
                         {editingZone && (
                           <div className="space-y-4">
@@ -316,6 +322,9 @@ export function ZoneManagement({ searchQuery }: ZoneManagementProps) {
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Add Order to {zone.name}</DialogTitle>
+                          <DialogDescription>
+                            Add a new delivery order to this zone with customer details and delivery information.
+                          </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
                           <div>

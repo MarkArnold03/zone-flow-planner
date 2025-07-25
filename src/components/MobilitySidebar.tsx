@@ -191,7 +191,7 @@ export function MobilitySidebar() {
                             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                             style={{ backgroundColor: zone.color }}
                           >
-                            <zone.icon className="h-4 w-4 text-white" />
+                            <zone.icon className="h-4 w-4 text-primary-foreground" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-sm text-foreground">
@@ -232,7 +232,7 @@ export function MobilitySidebar() {
                   <CardContent className="p-3">
                     <div className="flex items-start space-x-3">
                       <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                        <Truck className="h-4 w-4 text-white" />
+                        <Truck className="h-4 w-4 text-primary-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm text-foreground">
@@ -318,7 +318,7 @@ export function MobilitySidebar() {
                         className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: group.color }}
                       >
-                        <Settings className="h-4 w-4 text-white" />
+                        <Settings className="h-4 w-4 text-primary-foreground" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm text-foreground">

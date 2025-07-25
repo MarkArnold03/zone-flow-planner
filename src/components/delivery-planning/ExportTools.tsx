@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Download, FileText, FileSpreadsheet, Calendar, Users, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -96,6 +96,9 @@ export function ExportTools() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Export Planning Data</DialogTitle>
+            <DialogDescription>
+              Configure and export your delivery planning data in various formats for reporting or backup purposes.
+            </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">

@@ -46,7 +46,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
 
   return (
     <div className={`w-80 border-r bg-card shadow-lg flex flex-col animate-slide-in-right transition-colors ${
-      isDragOver ? 'bg-blue-50 border-blue-300' : ''
+      isDragOver ? 'bg-muted/50 border-primary/30' : ''
     }`}
          onDrop={handleDrop}
          onDragOver={handleDragOver}
@@ -61,7 +61,7 @@ export function PlanningSidebar({ selectedAssignment, onAssignmentClose }: Plann
           <p className="text-xs text-muted-foreground">
             Drag & drop to assign zones • Drop assignments here to remove
             {isDragOver && (
-              <span className="block text-blue-600 font-medium mt-1">
+              <span className="block text-primary font-medium mt-1">
                 🎯 Drop here to remove assignment
               </span>
             )}

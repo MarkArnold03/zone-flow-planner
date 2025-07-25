@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { useDeliveryPlanning } from '@/hooks/useDeliveryPlanning';
 
 export function NotesAnnotations() {
@@ -46,6 +46,9 @@ export function NotesAnnotations() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add Note</DialogTitle>
+              <DialogDescription>
+                Create a note to track important information, reminders, or team communications.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <Textarea

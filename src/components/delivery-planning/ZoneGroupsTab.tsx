@@ -3,7 +3,7 @@ import { Plus, Edit, Package, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -79,6 +79,9 @@ export function ZoneGroupsTab({ searchQuery }: ZoneGroupsTabProps) {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Zone Group</DialogTitle>
+              <DialogDescription>
+                Create a new zone group by selecting multiple zones to combine into a single manageable unit.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>

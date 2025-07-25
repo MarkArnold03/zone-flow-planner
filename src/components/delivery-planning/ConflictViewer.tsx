@@ -29,7 +29,7 @@ export function ConflictViewer({ conflicts, title = "Conflicts Detected" }: Conf
       case 'medium':
         return <AlertCircle className="h-4 w-4 text-orange-500" />;
       case 'low':
-        return <Info className="h-4 w-4 text-blue-500" />;
+        return <Info className="h-4 w-4 text-primary" />;
     }
   };
 
@@ -91,7 +91,7 @@ export function ConflictViewer({ conflicts, title = "Conflicts Detected" }: Conf
                 </AlertDescription>
                 
                 {conflict.suggestion && (
-                  <AlertDescription className="text-sm text-blue-700 bg-blue-50 p-2 rounded">
+                  <AlertDescription className="text-sm text-primary bg-muted/50 p-2 rounded">
                     <strong>Suggestion:</strong> {conflict.suggestion}
                   </AlertDescription>
                 )}
