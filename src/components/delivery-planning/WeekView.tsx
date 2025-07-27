@@ -320,13 +320,12 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                          })}
                       
                       {/* Show regular assignments (not stretched) if this cell is not hidden */}
-                       {!isHidden && assignments.length === 0 && !inSelection ? (
-                         <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-200">
-                           <div className="text-xs text-muted-foreground/50">+</div>
-                         </div>
-                       ) : !isHidden && (
+                       {!isHidden && (
                          <div className="p-1 h-full overflow-hidden">
-                            {assignments.map((assignment, assignmentIndex) => {
+                            {/* Filter out multi-hour assignments that don't start at this hour */}
+                            {assignments.filter(a => 
+                              !(a.startHour !== undefined && a.endHour !== undefined && a.startHour !== hour)
+                            ).map((assignment, assignmentIndex) => {
                               const conflictSeverity = getConflictSeverity(assignment);
                               
                               return (
@@ -356,33 +355,31 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                   <div className="font-medium truncate text-xs flex-1">
                                     {assignment.zone?.name || assignment.zoneGroup?.name}
                                   </div>
-                                 
+                                  
                                    {/* Edit and Remove Buttons */}
-                                   <div className="flex justify-end items-center mt-1">
-                                     <div className="flex gap-1">
-                                       <Button
-                                         variant="ghost"
-                                         size="sm"
-                                         className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-muted/20"
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           setEditingAssignment(assignment);
-                                         }}
-                                       >
-                                         <Edit className="h-3 w-3 text-primary" />
-                                       </Button>
-                                       <Button
-                                         variant="ghost"
-                                         size="sm"
-                                         className="opacity-0 group-hover:opacity-100 transition-opacity h-4 w-4 p-0 hover:bg-destructive/20"
-                                         onClick={(e) => {
-                                           e.stopPropagation();
-                                           removeAssignment(assignment.id);
-                                         }}
-                                       >
-                                         <X className="h-3 w-3 text-destructive" />
-                                       </Button>
-                                     </div>
+                                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-5 w-5 p-0 bg-white/80 hover:bg-white border border-border/50 shadow-sm"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         setEditingAssignment(assignment);
+                                       }}
+                                     >
+                                       <Edit className="h-3 w-3 text-primary" />
+                                     </Button>
+                                     <Button
+                                       variant="ghost"
+                                       size="sm"
+                                       className="h-5 w-5 p-0 bg-white/80 hover:bg-destructive/20 border border-border/50 shadow-sm"
+                                       onClick={(e) => {
+                                         e.stopPropagation();
+                                         removeAssignment(assignment.id);
+                                       }}
+                                     >
+                                       <X className="h-3 w-3 text-destructive" />
+                                     </Button>
                                    </div>
 
                                  {/* Conflict Indicator */}
@@ -392,10 +389,19 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                    </div>
                                  )}
                                </div>
-                             );
-                           })}
-                         </div>
-                      )}
+                              );
+                            })}
+                            
+                            {/* Show empty state if no assignments and not in selection */}
+                            {assignments.filter(a => 
+                              !(a.startHour !== undefined && a.endHour !== undefined && a.startHour !== hour)
+                            ).length === 0 && !inSelection && (
+                              <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-200">
+                                <div className="text-xs text-muted-foreground/50">+</div>
+                              </div>
+                            )}
+                          </div>
+                       )}
                       </div>
                     );
                   })}
