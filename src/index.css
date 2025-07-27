@@ -75,11 +75,13 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Current time highlighting - subtle */
-    --today-highlight: 220 13% 96%;
-    --today-border: 220 9% 46%;
-    --current-time: 220 9% 46%;
-    --current-time-bg: 220 13% 98%;
+    /* Current time highlighting - more visible */
+    --today-highlight: 220 60% 95%;
+    --today-border: 220 60% 60%;
+    --today-time: 220 60% 30%;
+    --today-time-bg: 220 60% 98%;
+    --current-time: 220 60% 30%;
+    --current-time-bg: 220 60% 96%;
   }
 
   .dark {
@@ -119,11 +121,13 @@ All colors MUST be HSL.
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Current time highlighting - dark mode subtle */
-    --today-highlight: 220 13% 15%;
-    --today-border: 220 9% 46%;
-    --current-time: 220 9% 46%;
-    --current-time-bg: 220 13% 10%;
+    /* Current time highlighting - dark mode more visible */
+    --today-highlight: 220 60% 15%;
+    --today-border: 220 60% 40%;
+    --today-time: 220 60% 70%;
+    --today-time-bg: 220 60% 10%;
+    --current-time: 220 60% 70%;
+    --current-time-bg: 220 60% 8%;
   }
 }
 
@@ -176,6 +180,23 @@ All colors MUST be HSL.
   .interactive {
     @apply transition-all duration-200 cursor-pointer select-none hover:shadow-medium hover:-translate-y-0.5;
   }
+  
+  /* Hide scrollbars but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Current time/date highlighting utilities */
+  .bg-today-highlight { background-color: hsl(var(--today-highlight)); }
+  .border-today-border { border-color: hsl(var(--today-border)); }
+  .text-today-time { color: hsl(var(--today-time)); }
+  .bg-today-time-bg { background-color: hsl(var(--today-time-bg)); }
+  .border-today-time { border-color: hsl(var(--today-time)); }
   
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }

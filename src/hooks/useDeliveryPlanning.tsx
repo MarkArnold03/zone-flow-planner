@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { format, startOfWeek, addDays, isSameDay } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import {
   PlanningState,
@@ -122,19 +123,29 @@ export function useDeliveryPlanning() {
     if ('date' in dragData && 'timeSlot' in dragData) {
       const assignment = dragData as DeliveryAssignment;
       
-      // Update the assignment's date and time slot
+      // Remove the existing assignment and add the updated one
       setState(prev => ({
         ...prev,
         assignments: prev.assignments.map(a => 
           a.id === assignment.id 
-            ? { ...a, date, timeSlot }
+            ? { 
+                ...assignment, 
+                date, 
+                timeSlot,
+                startHour: assignment.startHour !== undefined ? assignment.startHour : parseInt(timeSlot),
+                endHour: assignment.endHour
+              }
             : a
         )
       }));
 
+      const hourRange = assignment.startHour !== undefined && assignment.endHour !== undefined 
+        ? ` ${assignment.startHour}:00-${assignment.endHour}:00`
+        : ` ${timeSlot}:00`;
+
       toast({
-        title: "Assignment moved",
-        description: `Assignment moved to ${format(date, 'EEE dd')} ${timeSlot}:00`,
+        title: "Uppdrag flyttat",
+        description: `Uppdrag flyttat till ${format(date, 'EEE dd', { locale: sv })}${hourRange}`,
       });
       return;
     }

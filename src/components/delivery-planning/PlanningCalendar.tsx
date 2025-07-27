@@ -40,12 +40,39 @@ export function PlanningCalendar({ selectedAssignment, onAssignmentSelect }: Pla
     // Try to get different types of drag data
     const zoneData = e.dataTransfer.getData('zone');
     const zoneGroupData = e.dataTransfer.getData('zoneGroup');
-    const assignmentData = e.dataTransfer.getData('assignment');
+    const assignmentData = e.dataTransfer.getData('application/json');
 
     if (assignmentData) {
       // Handle assignment moving
-      const assignment = JSON.parse(assignmentData);
-      handleDrop(assignment, date, timeSlot);
+      try {
+        const assignment = JSON.parse(assignmentData);
+        // Update assignment's date and time slot
+        const hour = parseInt(timeSlot);
+        if (dragSelection && dragSelection.date.getTime() === date.getTime()) {
+          // If dropping in a selected time range, use the range
+          const updatedAssignment = {
+            ...assignment,
+            date,
+            timeSlot: dragSelection.startHour.toString(),
+            startHour: dragSelection.startHour,
+            endHour: dragSelection.endHour
+          };
+          handleDrop(updatedAssignment, date, dragSelection.startHour.toString());
+          setDragSelection(null);
+        } else {
+          // Regular single-hour assignment move
+          const updatedAssignment = {
+            ...assignment,
+            date,
+            timeSlot,
+            startHour: hour,
+            endHour: assignment.endHour ? hour + (assignment.endHour - assignment.startHour) : undefined
+          };
+          handleDrop(updatedAssignment, date, timeSlot);
+        }
+      } catch (error) {
+        console.error('Error parsing assignment data:', error);
+      }
     } else if (zoneData) {
       // If there's a selected time range, create a single assignment spanning the entire range
       if (dragSelection && dragSelection.date.getTime() === date.getTime()) {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { format, isToday, isSameDay } from 'date-fns';
 import { sv } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
@@ -28,10 +28,20 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
   const [internalDragSelection, setInternalDragSelection] = useState<{ date: Date; startHour: number; endHour: number } | null>(null);
   const [editingAssignment, setEditingAssignment] = useState<DeliveryAssignment | null>(null);
   const [selectedAssignment, setSelectedAssignment] = useState<DeliveryAssignment | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   // Use external drag selection if provided, otherwise use internal
   const dragSelection = externalDragSelection || internalDragSelection;
   const setDragSelection = setExternalDragSelection || setInternalDragSelection;
+
+  // Update current time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Generate time slots from 5 AM to 12 AM (midnight)
   const timeSlots = Array.from({ length: 20 }, (_, i) => {
@@ -151,8 +161,31 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
     return false;
   }, [getAssignments]);
 
+  // Add current time indicator
+  const getCurrentTimeDisplay = () => {
+    return {
+      date: format(currentTime, 'EEE dd MMM yyyy', { locale: sv }),
+      time: format(currentTime, 'HH:mm'),
+      day: format(currentTime, 'EEEE', { locale: sv })
+    };
+  };
+
+  const currentTimeDisplay = getCurrentTimeDisplay();
+
   return (
     <div className="h-full bg-card flex flex-col shadow-soft relative z-10" onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+      {/* Current Time Display */}
+      <div className="p-3 border-b border-border flex items-center justify-between flex-shrink-0 bg-today-time-bg">
+        <div className="flex items-center gap-4">
+          <div className="text-sm font-medium text-today-time">
+            Idag: {currentTimeDisplay.day} {currentTimeDisplay.date}
+          </div>
+          <div className="text-sm font-bold text-today-time">
+            Nuvarande tid: {currentTimeDisplay.time}
+          </div>
+        </div>
+      </div>
+
       {/* Selection Display */}
       {dragSelection && (
         <div className="p-3 border-b border-border flex items-center justify-between flex-shrink-0 bg-primary/5">
@@ -178,7 +211,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
         
         {/* Horizontal Time Header - Single scrollable area */}
         <div className="flex-1">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto hide-scrollbar">
             <div className="flex min-w-max">
               {timeSlots.map((slot) => (
                 <div 
@@ -200,7 +233,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
       </div>
 
       {/* Calendar Body - Scrollable vertically */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto hide-scrollbar">
         {weekDays.map((day, dayIndex) => (
           <div key={day.toISOString()} className="flex border-b border-border/30 last:border-b-0 min-h-[80px]">
             {/* Fixed Date column */}
@@ -218,7 +251,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
 
             {/* Time slots row - Horizontally scrollable */}
             <div className="flex-1">
-              <div className="overflow-x-auto h-full">
+              <div className="overflow-x-auto h-full hide-scrollbar">
                 <div className="flex min-w-max h-full">
                   {timeSlots.map((slot) => {
                     const assignments = getAssignments(day, slot.id);
@@ -271,8 +304,9 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                  onAssignmentSelect?.(assignment);
                                }}
                                onDragStart={(e) => {
-                                 e.dataTransfer.setData('assignment', JSON.stringify(assignment));
-                               }}
+                                  e.dataTransfer.setData('application/json', JSON.stringify(assignment));
+                                  e.dataTransfer.effectAllowed = 'move';
+                                }}
                              >
                                 <div className="font-medium truncate text-xs">
                                   {assignment.zone?.name || assignment.zoneGroup?.name}
@@ -281,33 +315,31 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                   {assignment.startHour}:00 - {assignment.endHour}:00
                                 </div>
                                
-                                {/* Edit and Remove Buttons */}
-                                 <div className="flex-1 flex justify-end items-start">
-                                   <div className="flex gap-1">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="opacity-0 group-hover:opacity-100 transition-all duration-200 h-4 w-4 p-0"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setEditingAssignment(assignment);
-                                        }}
-                                      >
-                                        <Edit className="h-3 w-3 text-primary" />
-                                      </Button>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="opacity-0 group-hover:opacity-100 transition-all duration-200 h-4 w-4 p-0"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          removeAssignment(assignment.id);
-                                        }}
-                                      >
-                                        <X className="h-3 w-3 text-destructive" />
-                                      </Button>
-                                   </div>
-                                 </div>
+                                 {/* Edit and Remove Buttons */}
+                                  <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-5 w-5 p-0 hover:bg-white/90 bg-white/70 rounded-sm shadow-sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingAssignment(assignment);
+                                      }}
+                                    >
+                                      <Edit className="h-3 w-3 text-primary" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-5 w-5 p-0 hover:bg-white/90 bg-white/70 rounded-sm shadow-sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeAssignment(assignment.id);
+                                      }}
+                                    >
+                                      <X className="h-3 w-3 text-destructive" />
+                                    </Button>
+                                  </div>
 
                                {/* Conflict Indicator */}
                                {conflictSeverity && (
@@ -345,9 +377,10 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                    setSelectedAssignment(assignment);
                                    onAssignmentSelect?.(assignment);
                                  }}
-                                 onDragStart={(e) => {
-                                   e.dataTransfer.setData('assignment', JSON.stringify(assignment));
-                                 }}
+                                  onDragStart={(e) => {
+                                    e.dataTransfer.setData('application/json', JSON.stringify(assignment));
+                                    e.dataTransfer.effectAllowed = 'move';
+                                  }}
                                >
                                    <div className="font-medium truncate text-xs mb-1">
                                      {assignment.zone?.name || assignment.zoneGroup?.name}
@@ -362,31 +395,31 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                      }
                                    </div>
                                   
-                                   {/* Edit and Remove Buttons */}
-                                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                     <Button
-                                       variant="ghost"
-                                       size="sm"
-                                        className="h-4 w-4 p-0 hover:bg-white/80 bg-white/60"
-                                       onClick={(e) => {
-                                         e.stopPropagation();
-                                         setEditingAssignment(assignment);
-                                       }}
-                                     >
-                                       <Edit className="h-3 w-3 text-primary" />
-                                     </Button>
-                                     <Button
-                                       variant="ghost"
-                                       size="sm"
-                                       className="h-4 w-4 p-0 hover:bg-white/80 bg-white/60"
-                                       onClick={(e) => {
-                                         e.stopPropagation();
-                                         removeAssignment(assignment.id);
-                                       }}
-                                     >
-                                       <X className="h-3 w-3 text-destructive" />
-                                     </Button>
-                                   </div>
+                                    {/* Edit and Remove Buttons */}
+                                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-5 w-5 p-0 hover:bg-white/90 bg-white/70 rounded-sm shadow-sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setEditingAssignment(assignment);
+                                        }}
+                                      >
+                                        <Edit className="h-3 w-3 text-primary" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-5 w-5 p-0 hover:bg-white/90 bg-white/70 rounded-sm shadow-sm"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          removeAssignment(assignment.id);
+                                        }}
+                                      >
+                                        <X className="h-3 w-3 text-destructive" />
+                                      </Button>
+                                    </div>
 
                                  {/* Conflict Indicator */}
                                  {conflictSeverity && (
