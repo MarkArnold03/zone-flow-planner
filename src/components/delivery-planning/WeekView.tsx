@@ -288,7 +288,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                             return (
                                <div 
                                  key={assignment.id} 
-                                 className={`absolute inset-0 rounded-lg group cursor-pointer shadow-lg border-2 z-20 overflow-hidden flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:scale-[1.02] ${
+                                 className={`absolute rounded-lg group cursor-pointer shadow-lg border-2 z-20 overflow-hidden flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:scale-[1.02] ${
                                    conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50' :
                                    conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50' :
                                    conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary dark:bg-primary/15' :
@@ -296,9 +296,9 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                  }`}
                                 style={{
                                   width: `${calculatedWidth}px`,
-                                  height: `100%`,
-                                  top: `${assignmentIndex * 4}px`, // Minimal stack offset
-                                  left: '0px',
+                                  height: `calc(100% - ${assignmentIndex * 8}px)`,
+                                  top: `${assignmentIndex * 4}px`,
+                                  left: '2px',
                                   backgroundColor: assignment.zone?.color ? `${assignment.zone.color}25` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}25` : undefined,
                                   borderColor: assignment.zone?.color || assignment.zoneGroup?.color,
                                   borderLeftWidth: '6px'
