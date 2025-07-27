@@ -186,19 +186,23 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
         </div>
       </div>
 
-      {/* Selection Display */}
+      {/* Selection Display - Make more prominent */}
       {dragSelection && (
-        <div className="p-3 border-b border-border flex items-center justify-between flex-shrink-0 bg-primary/5">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-primary font-medium">
-              Valt: {format(dragSelection.date, 'EEE dd', { locale: sv })} {dragSelection.startHour}:00 - {dragSelection.endHour}:00
+        <div className="p-4 border-b-2 border-primary flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-primary/10 to-primary/5 shadow-medium">
+          <div className="flex items-center gap-4">
+            <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+            <span className="text-base text-primary font-semibold">
+              Valt tidsintervall: {format(dragSelection.date, 'EEEE dd MMMM', { locale: sv })} 
             </span>
-            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted/50 rounded">
-              Dra en zon från sidopanelen för att tilldela till denna tid
+            <span className="text-lg font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">
+              {dragSelection.startHour}:00 - {dragSelection.endHour}:00
+            </span>
+            <span className="text-sm text-primary/80 bg-primary/5 px-3 py-1 rounded-full border border-primary/20">
+              Dra en zon från sidopanelen för att tilldela
             </span>
           </div>
-          <Button variant="ghost" size="sm" onClick={clearSelection}>
-            <X className="h-4 w-4" />
+          <Button variant="ghost" size="sm" onClick={clearSelection} className="hover:bg-primary/10">
+            <X className="h-5 w-5 text-primary" />
           </Button>
         </div>
       )}
@@ -265,8 +269,8 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                       <div
                         key={`${day.toISOString()}-${slot.id}`}
                         className={`w-24 h-full border-r border-border last:border-r-0 relative transition-all duration-200 cursor-pointer select-none flex-shrink-0 interactive ${
-                          inDragRange ? 'bg-primary/30 border-primary/60' : 
-                          inSelection ? 'bg-primary/20 border-2 border-primary ring-2 ring-primary/20' :
+                          inDragRange ? 'drag-highlight' : 
+                          inSelection ? 'selection-highlight' :
                           getCurrentTimeClasses(day, hour) ||
                           (isToday(day) ? 'bg-today-highlight/50' : 'hover:bg-muted/50')
                         }`}
