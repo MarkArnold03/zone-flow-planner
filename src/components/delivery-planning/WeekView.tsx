@@ -280,10 +280,11 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                         onMouseEnter={() => handleMouseEnter(day, hour)}
                        >
                           {/* Show stretched assignments that start at this hour - Fill entire time range */}
-                           {stretchedAssignments.map((assignment, assignmentIndex) => {
-                             const conflictSeverity = getConflictSeverity(assignment);
-                             const hourSpan = (assignment.endHour || hour + 1) - hour;
-                             const calculatedWidth = hourSpan * 96 + (hourSpan - 1) * 1; // 96px per cell + border
+                            {stretchedAssignments.map((assignment, assignmentIndex) => {
+                              const conflictSeverity = getConflictSeverity(assignment);
+                              const hourSpan = (assignment.endHour || hour + 1) - hour;
+                              // Calculate width: 6rem (w-24) = 96px per cell, plus 1px border per additional cell
+                              const calculatedWidth = hourSpan * 96 - 4; // Account for padding and borders
                             
                             return (
                                <div 
