@@ -279,45 +279,63 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                         onMouseDown={(e) => handleMouseDown(day, hour, e)}
                         onMouseEnter={() => handleMouseEnter(day, hour)}
                        >
-                         {/* Show stretched assignments that start at this hour */}
-                          {stretchedAssignments.map((assignment, assignmentIndex) => {
-                            const conflictSeverity = getConflictSeverity(assignment);
-                            const hourSpan = (assignment.endHour || hour + 1) - hour;
-                            const calculatedWidth = hourSpan * 96 + (hourSpan - 1) * 1; // 96px per cell + border
-                           
-                           return (
-                              <div 
-                                key={assignment.id} 
-                                className={`absolute top-1 left-1 rounded-lg p-2 group cursor-pointer shadow-medium border-l-4 z-20 overflow-hidden flex flex-col transition-all duration-200 hover:shadow-heavy ${
-                                  conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50' :
-                                  conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50' :
-                                  conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10' :
-                                  'bg-card border-primary text-primary'
-                                }`}
-                               style={{
-                                 width: `${calculatedWidth - 4}px`,
-                                 height: `calc(100% - 8px)`,
-                                 top: `${assignmentIndex * 22 + 4}px`, // Stack multiple assignments
-                                 backgroundColor: assignment.zone?.color ? `${assignment.zone.color}15` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}15` : undefined,
-                                 borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
-                               }}
-                               draggable
-                               onClick={(e) => {
-                                 e.stopPropagation();
-                                 setSelectedAssignment(assignment);
-                                 onAssignmentSelect?.(assignment);
-                               }}
-                               onDragStart={(e) => {
-                                  e.dataTransfer.setData('application/json', JSON.stringify(assignment));
-                                  e.dataTransfer.effectAllowed = 'move';
+                          {/* Show stretched assignments that start at this hour - Fill entire time range */}
+                           {stretchedAssignments.map((assignment, assignmentIndex) => {
+                             const conflictSeverity = getConflictSeverity(assignment);
+                             const hourSpan = (assignment.endHour || hour + 1) - hour;
+                             const calculatedWidth = hourSpan * 96 + (hourSpan - 1) * 1; // 96px per cell + border
+                            
+                            return (
+                               <div 
+                                 key={assignment.id} 
+                                 className={`absolute inset-0 rounded-lg group cursor-pointer shadow-lg border-2 z-20 overflow-hidden flex flex-col justify-between transition-all duration-200 hover:shadow-xl hover:scale-[1.02] ${
+                                   conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50' :
+                                   conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50' :
+                                   conflictSeverity === 'low' ? 'bg-primary/10 border-primary text-primary dark:bg-primary/15' :
+                                   'bg-card border-primary text-primary'
+                                 }`}
+                                style={{
+                                  width: `${calculatedWidth}px`,
+                                  height: `100%`,
+                                  top: `${assignmentIndex * 4}px`, // Minimal stack offset
+                                  left: '0px',
+                                  backgroundColor: assignment.zone?.color ? `${assignment.zone.color}25` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}25` : undefined,
+                                  borderColor: assignment.zone?.color || assignment.zoneGroup?.color,
+                                  borderLeftWidth: '6px'
                                 }}
-                             >
-                                <div className="font-medium truncate text-xs">
-                                  {assignment.zone?.name || assignment.zoneGroup?.name}
-                                </div>
-                                <div className="text-xs opacity-75 mb-1">
-                                  {assignment.startHour}:00 - {assignment.endHour}:00
-                                </div>
+                                draggable
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedAssignment(assignment);
+                                  onAssignmentSelect?.(assignment);
+                                }}
+                                onDragStart={(e) => {
+                                   e.dataTransfer.setData('application/json', JSON.stringify(assignment));
+                                   e.dataTransfer.effectAllowed = 'move';
+                                 }}
+                              >
+                                 {/* Header with zone name and time range */}
+                                 <div className="p-2 border-b border-current/20">
+                                   <div className="font-semibold text-sm truncate">
+                                     {assignment.zone?.name || assignment.zoneGroup?.name}
+                                   </div>
+                                   <div className="text-xs font-medium bg-white/90 dark:bg-gray-800/90 px-2 py-1 rounded-full mt-1 inline-block">
+                                     {assignment.startHour}:00 - {assignment.endHour}:00
+                                   </div>
+                                 </div>
+                                 
+                                 {/* Body with delivery info */}
+                                 <div className="flex-1 p-2 flex flex-col justify-center">
+                                   <div className="text-xs opacity-90">
+                                     {assignment.deliveryCount} leveranser
+                                   </div>
+                                   {assignment.postcodes.length > 0 && (
+                                     <div className="text-xs opacity-75 truncate">
+                                       {assignment.postcodes.slice(0, 3).join(', ')}
+                                       {assignment.postcodes.length > 3 && '...'}
+                                     </div>
+                                   )}
+                                 </div>
                                
                                  {/* Edit and Remove Buttons */}
                                   <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
