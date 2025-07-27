@@ -223,16 +223,6 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                   {timeSlots.map((slot) => {
                     const assignments = getAssignments(day, slot.id);
                     const stretchedAssignments = getStretchedAssignments(day, parseInt(slot.id));
-                    
-                    // Debug logging
-                    if (assignments.length > 0 || stretchedAssignments.length > 0) {
-                      console.log(`Day: ${day.toISOString()}, Slot: ${slot.id}`, {
-                        assignments: assignments.length,
-                        stretched: stretchedAssignments.length,
-                        assignmentData: assignments,
-                        stretchedData: stretchedAssignments
-                      });
-                    }
                     const hour = parseInt(slot.id);
                     const inDragRange = isInDragRange(day, hour);
                     const inSelection = isInSelection(day, hour);
@@ -329,28 +319,25 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                            );
                          })}
                       
-                      {/* Show regular assignments (not stretched) if this cell is not hidden */}
-                       {!isHidden && (
-                         <div className="p-1 h-full overflow-hidden">
-                            {/* Filter out multi-hour assignments that don't start at this hour */}
-                            {assignments.filter(a => 
-                              !(a.startHour !== undefined && a.endHour !== undefined && a.startHour !== hour)
-                            ).map((assignment, assignmentIndex) => {
-                              const conflictSeverity = getConflictSeverity(assignment);
-                              
-                              return (
-                                <div 
-                                  key={assignment.id} 
-                                  className={`rounded-lg p-2 relative group cursor-pointer shadow-heavy border-l-4 transition-all duration-300 hover:shadow-glow hover:scale-105 flex flex-col mb-1 ${
-                                    conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50 shadow-glow' :
-                                    conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50 shadow-medium' :
-                                   conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10 shadow-soft' :
-                                   'bg-gradient-card border-primary text-primary shadow-float'
+                       {/* Show regular assignments (not stretched) if this cell is not hidden */}
+                        {!isHidden && (
+                          <div className="p-1 h-full overflow-hidden">
+                             {/* Show all assignments for this hour */}
+                             {assignments.map((assignment, assignmentIndex) => {
+                               const conflictSeverity = getConflictSeverity(assignment);
+                               
+                               return (
+                                 <div 
+                                   key={assignment.id} 
+                                    className={`rounded-lg p-2 relative group cursor-pointer shadow-medium border-l-4 transition-all duration-200 hover:shadow-heavy hover:scale-102 flex flex-col mb-1 min-h-[50px] ${
+                                      conflictSeverity === 'high' ? 'bg-red-50 border-red-500 text-red-800 dark:bg-red-950/50' :
+                                     conflictSeverity === 'medium' ? 'bg-yellow-50 border-yellow-500 text-yellow-800 dark:bg-yellow-950/50' :
+                                    conflictSeverity === 'low' ? 'bg-primary/5 border-primary text-primary dark:bg-primary/10' :
+                                    'bg-card border-primary text-primary'
                                   }`}
                                   style={{
-                                    backgroundColor: assignment.zone?.color ? `${assignment.zone.color}15` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}15` : undefined,
-                                    borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color,
-                                    height: 'calc(50% - 2px)' // Allow stacking
+                                     backgroundColor: assignment.zone?.color ? `${assignment.zone.color}15` : assignment.zoneGroup?.color ? `${assignment.zoneGroup.color}15` : undefined,
+                                     borderLeftColor: assignment.zone?.color || assignment.zoneGroup?.color
                                   }}
                                  draggable
                                  onClick={(e) => {
@@ -362,16 +349,25 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                    e.dataTransfer.setData('assignment', JSON.stringify(assignment));
                                  }}
                                >
-                                  <div className="font-medium truncate text-xs flex-1">
-                                    {assignment.zone?.name || assignment.zoneGroup?.name}
-                                  </div>
+                                   <div className="font-medium truncate text-xs mb-1">
+                                     {assignment.zone?.name || assignment.zoneGroup?.name}
+                                   </div>
+                                   <div className="text-xs opacity-75 truncate mb-1">
+                                     {assignment.deliveryCount} leveranser
+                                   </div>
+                                   <div className="text-xs opacity-60 truncate">
+                                     {assignment.startHour !== undefined && assignment.endHour !== undefined 
+                                       ? `${assignment.startHour}:00 - ${assignment.endHour}:00`
+                                       : `${assignment.timeSlot}:00`
+                                     }
+                                   </div>
                                   
                                    {/* Edit and Remove Buttons */}
                                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                      <Button
                                        variant="ghost"
                                        size="sm"
-                                       className="h-5 w-5 p-0 bg-white/80 hover:bg-white border border-border/50 shadow-sm"
+                                        className="h-4 w-4 p-0 hover:bg-white/80 bg-white/60"
                                        onClick={(e) => {
                                          e.stopPropagation();
                                          setEditingAssignment(assignment);
@@ -382,7 +378,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                                      <Button
                                        variant="ghost"
                                        size="sm"
-                                       className="h-5 w-5 p-0 bg-white/80 hover:bg-destructive/20 border border-border/50 shadow-sm"
+                                       className="h-4 w-4 p-0 hover:bg-white/80 bg-white/60"
                                        onClick={(e) => {
                                          e.stopPropagation();
                                          removeAssignment(assignment.id);
@@ -402,14 +398,12 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                               );
                             })}
                             
-                            {/* Show empty state if no assignments and not in selection */}
-                            {assignments.filter(a => 
-                              !(a.startHour !== undefined && a.endHour !== undefined && a.startHour !== hour)
-                            ).length === 0 && !inSelection && (
-                              <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-200">
-                                <div className="text-xs text-muted-foreground/50">+</div>
-                              </div>
-                            )}
+                             {/* Show empty state if no assignments and not in selection */}
+                             {assignments.length === 0 && !inSelection && (
+                               <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-200">
+                                 <div className="text-xs text-muted-foreground/50">+</div>
+                               </div>
+                             )}
                           </div>
                        )}
                       </div>
