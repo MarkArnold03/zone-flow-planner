@@ -319,11 +319,20 @@ export function useDeliveryPlanning() {
     toast({ title: "Assignment removed" });
   }, [toast]);
 
-  // Get assignments for a specific date and time slot
+  // Get assignments for a specific date and time slot (including multi-hour assignments)
   const getAssignments = useCallback((date: Date, timeSlot: string) => {
-    return state.assignments.filter(a => 
-      isSameDay(a.date, date) && a.timeSlot === timeSlot
-    );
+    const hour = parseInt(timeSlot);
+    return state.assignments.filter(a => {
+      if (!isSameDay(a.date, date)) return false;
+      
+      // For multi-hour assignments, check if this hour is within the range
+      if (a.startHour !== undefined && a.endHour !== undefined) {
+        return hour >= a.startHour && hour < a.endHour;
+      }
+      
+      // For single-hour assignments, check exact time slot match
+      return a.timeSlot === timeSlot;
+    });
   }, [state.assignments]);
 
   // Get available zones (not currently assigned)

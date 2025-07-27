@@ -21,7 +21,7 @@ interface WeekViewProps {
 }
 
 export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect, dragSelection: externalDragSelection, setDragSelection: setExternalDragSelection, onAssignmentSelect }: WeekViewProps) {
-  const { weekDays, removeAssignment } = useDeliveryPlanning();
+  const { weekDays, removeAssignment, state } = useDeliveryPlanning();
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ date: Date; hour: number } | null>(null);
   const [dragEnd, setDragEnd] = useState<{ date: Date; hour: number } | null>(null);
@@ -38,7 +38,7 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
     const hour = i + 5;
     const actualHour = hour > 23 ? hour - 24 : hour;
     const displayHour12 = actualHour === 0 ? 12 : actualHour > 12 ? actualHour - 12 : actualHour;
-    const ampm = actualHour >= 12 ? 'EM' : 'FM';
+    const ampm = actualHour >= 12 ? 'PM' : 'AM';
     
     return {
       id: `${actualHour}`,
@@ -128,11 +128,14 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
 
   // Get all multi-hour assignments that start at a specific hour
   const getStretchedAssignments = useCallback((date: Date, hour: number) => {
-    const allAssignments = getAssignments(date, hour.toString());
-    return allAssignments.filter(assignment => 
-      assignment.startHour === hour && assignment.endHour && assignment.endHour > assignment.startHour
+    // Get assignments specifically for this hour that have multi-hour spans
+    return state.assignments.filter(assignment => 
+      isSameDay(assignment.date, date) &&
+      assignment.startHour === hour && 
+      assignment.endHour && 
+      assignment.endHour > assignment.startHour
     );
-  }, [getAssignments]);
+  }, [state.assignments]);
 
   // Check if a cell should be hidden because it's part of a stretched assignment
   const isPartOfStretchedAssignment = useCallback((date: Date, hour: number) => {
@@ -317,13 +320,13 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                          })}
                       
                       {/* Show regular assignments (not stretched) if this cell is not hidden */}
-                       {!isHidden && assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).length === 0 ? (
+                       {!isHidden && assignments.length === 0 && !inSelection ? (
                          <div className="h-full w-full flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-200">
                            <div className="text-xs text-muted-foreground/50">+</div>
                          </div>
                        ) : !isHidden && (
                          <div className="p-1 h-full overflow-hidden">
-                            {assignments.filter(a => !a.startHour || !a.endHour || a.startHour === hour).map((assignment, assignmentIndex) => {
+                            {assignments.map((assignment, assignmentIndex) => {
                               const conflictSeverity = getConflictSeverity(assignment);
                               
                               return (
