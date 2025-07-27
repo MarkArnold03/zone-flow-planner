@@ -223,6 +223,16 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
                   {timeSlots.map((slot) => {
                     const assignments = getAssignments(day, slot.id);
                     const stretchedAssignments = getStretchedAssignments(day, parseInt(slot.id));
+                    
+                    // Debug logging
+                    if (assignments.length > 0 || stretchedAssignments.length > 0) {
+                      console.log(`Day: ${day.toISOString()}, Slot: ${slot.id}`, {
+                        assignments: assignments.length,
+                        stretched: stretchedAssignments.length,
+                        assignmentData: assignments,
+                        stretchedData: stretchedAssignments
+                      });
+                    }
                     const hour = parseInt(slot.id);
                     const inDragRange = isInDragRange(day, hour);
                     const inSelection = isInSelection(day, hour);
