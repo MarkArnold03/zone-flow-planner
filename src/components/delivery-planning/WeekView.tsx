@@ -196,8 +196,8 @@ export function WeekView({ onDrop, onDragOver, getAssignments, onTimeRangeSelect
         </div>
       </div>
 
-      {/* Calendar Body - Fixed height, no vertical scroll */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Calendar Body - Scrollable vertically */}
+      <div className="flex-1 flex flex-col overflow-y-auto">
         {weekDays.map((day, dayIndex) => (
           <div key={day.toISOString()} className="flex border-b border-border/30 last:border-b-0 min-h-[80px]">
             {/* Fixed Date column */}
